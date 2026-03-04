@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🌸 PrincessLia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3d0035;border-radius:4px}
+input,textarea,select,button{font-family:Georgia,serif;font-size:13px}
+.inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:8px 12px;width:100%;outline:none}
+.inp:focus{border-color:#e91e8c}
+.btn{cursor:pointer;border:1px solid #3d0035;border-radius:8px;padding:7px 14px;background:#1a0018;color:#fce4ff}
+.btn-pink{background:#e91e8c;color:#fff;border-color:#e91e8c}
+.btn-danger{background:#6b0000;color:#fff;border-color:#6b0000}
+.btn-sm{padding:4px 10px;font-size:11px}
+.card{background:#1a0018;border:1px solid #3d0035;border-radius:12px;padding:14px}
+#app-header{padding:10px 14px;border-bottom:1px solid #3d0035;display:flex;align-items:center;justify-content:space-between;background:#130010;flex-shrink:0}
+#app-nav{display:flex;gap:4px;padding:6px 10px;border-bottom:1px solid #3d0035;overflow-x:auto;flex-shrink:0;background:#130010}
+.tab{background:none;border:1px solid transparent;border-radius:8px;padding:6px 10px;color:#a06090;font-size:11px;cursor:pointer;white-space:nowrap}
+.tab.active{background:#e91e8c22;color:#ff6ec7;border-color:#e91e8c44}
+#app-content{flex:1;overflow:hidden;padding:12px}
+.page{height:100%;overflow-y:auto;display:none;flex-direction:column;gap:10px}
+.page.active{display:flex}
+.muted{color:#a06090;font-size:11px}
+.modal-bg{display:none;position:fixed;inset:0;background:#000000bb;z-index:99;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:#1a0018;border:1px solid #e91e8c44;border-radius:14px;padding:20px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto}
+.modal h3{color:#ff6ec7;margin-bottom:14px}
+.progress-bar{background:#080005;border-radius:6px;height:8px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;background:linear-gradient(90deg,#8b0066,#e91e8c);border-radius:6px}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.verse-box{background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;border-radius:12px;padding:20px;text-align:center}
+</style>
+</head>
+<body>
+
+<div id="app-header">
+  <div>
+    <div style="color:#ff6ec7;font-weight:700;font-size:15px">🌸 PrincessLia</div>
+    <div class="muted">UCI · 2do año · Agenda personal</div>
+  </div>
+  <div style="text-align:right;max-width:200px">
+    <div style="color:#ffd700;font-size:9px;letter-spacing:1px">✦ HOY ✦</div>
+    <div id="hdr-verse" style="color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4"></div>
+  </div>
+</div>
+
+<div id="app-nav">
+  <button class="tab active" onclick="goTo('dev',this)">✝️ Devocional</button>
+  <button class="tab" onclick="goTo('agenda',this)">📅 Agenda</button>
+  <button class="tab" onclick="goTo('verses',this)">📖 Versículos</button>
+  <button class="tab" onclick="goTo('notas',this)">📝 Notas</button>
+  <button class="tab" onclick="goTo('metas',this)">🎯 Metas</button>
+  <button class="tab" onclick="goTo('diario',this)">🔒 Diario</button>
+</div>
+
+<div id="app-content">
+
+<!-- DEVOCIONAL -->
+<div id="page-dev" class="page active">
+  <div class="verse-box">
+    <div style="color:#ffd700;font-size:10px;letter-spacing:2px;margin-bottom:10px">✦ VERSÍCULO DEL DÍA ✦</div>
+    <div id="dv-text" style="font-size:14px;line-height:1.8;color:#ffb3e6;font-style:italic;margin-bottom:8px"></div>
+    <div id="dv-ref" style="color:#ff6ec7;font-size:12px"></div>
+  </div>
+  <div class="card">
+    <div class="muted" style="margin-bottom:8px">✍️ MI REFLEXIÓN DE HOY</div>
+    <textarea id="refl-inp" class="inp" rows="4" placeholder="¿Qué te habló Dios hoy?..." style="resize:none;line-height:1.7"></textarea>
+    <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+      <button class="btn btn-pink btn-sm" onclick="saveRefl()">💾 Guardar</button>
+      <span id="refl-ok" style="color:#ff6ec7;font-size:11px;display:none">✓ Guardado</span>
+    </div>
+  </div>
+  <div class="card" style="flex:1">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="muted">🙏 PETICIONES DE ORACIÓN</div>
+      <button class="btn btn-pink btn-sm" onclick="openPrayerModal()">+ Nueva</button>
+    </div>
+    <div id="prayer-cats-filter" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px"></div>
+    <div id="prayer-list"></div>
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div id="page-agenda" class="page">
+  <div id="day-btns" style="display:flex;gap:4px"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <div id="day-label" class="muted"></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-pink btn-sm" onclick="openEventModal()">+ Evento</button>
+      <button class="btn btn-sm" onclick="openMateriaModal()">⚙️ Materias</button>
+    </div>
+  </div>
+  <div class="card" style="flex:1;overflow-y:auto"><div id="event-list"></div></div>
+</div>
+
+<!-- VERSÍCULOS -->
+<div id="page-verses" class="page">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <div id="vcats-filter" style="display:flex;gap:5px;flex-wrap:wrap;flex:1"></div>
+    <button class="btn btn-pink btn-sm" onclick="openVerseModal()">+ Versículo</button>
+    <button class="btn btn-sm" onclick="openVcatModal()">⚙️ Categorías</button>
+  </div>
+  <div id="verse-card" onclick="flipVerse()" style="flex:1;cursor:pointer;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;border:2px solid #3d0035;min-height:160px"></div>
+  <div style="display:flex;gap:8px;justify-content:center;align-items:center">
+    <button class="btn" onclick="prevVerse()">← Ant</button>
+    <span id="verse-counter" class="muted"></span>
+    <button class="btn btn-pink" onclick="nextVerse()">Sig →</button>
+    <button class="btn btn-danger btn-sm" onclick="deleteVerse()">🗑</button>
+  </div>
+</div>
+
+<!-- NOTAS -->
+<div id="page-notas" class="page" style="display:none;flex-direction:column">
+  <div style="display:grid;grid-template-columns:190px 1fr;gap:10px;flex:1;min-height:0">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <select id="nota-filter" class="inp" onchange="renderNotas()" style="font-size:11px"></select>
+      <button class="btn btn-pink btn-sm" onclick="newNota()">+ Nueva</button>
+      <div id="nota-list" style="overflow-y:auto;flex:1"></div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
+        <input id="nota-title" class="inp" placeholder="Título..."/>
+        <select id="nota-cat-sel" class="inp" style="width:auto"></select>
+      </div>
+      <textarea id="nota-body" class="inp" rows="12" style="flex:1;resize:none;line-height:1.7;font-family:'Courier New',monospace" placeholder="Escribe tu nota..."></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-pink" onclick="saveNota()">💾 Guardar</button>
+        <button id="nota-del" class="btn btn-danger" onclick="deleteNota()" style="display:none">🗑 Eliminar</button>
+        <button class="btn btn-sm" onclick="openNotaCatModal()">⚙️ Categorías</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- METAS -->
+<div id="page-metas" class="page">
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+    <div id="meta-cats-filter" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-pink btn-sm" onclick="openMetaModal()">+ Meta</button>
+      <button class="btn btn-sm" onclick="openMetaCatModal()">⚙️ Categorías</button>
+    </div>
+  </div>
+  <div id="meta-list" style="display:flex;flex-direction:column;gap:10px"></div>
+</div>
+
+<!-- DIARIO -->
+<div id="page-diario" class="page">
+  <div id="diary-lock" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px">
+    <div style="font-size:48px">🔒</div>
+    <div style="color:#ffb3e6;font-size:15px;font-style:italic">Diario privado de PrincessLia</div>
+    <div class="muted">Este espacio es solo tuyo 🌸</div>
+    <div style="display:flex;gap:8px">
+      <input id="diary-pass" class="inp" type="password" placeholder="Contraseña..." style="width:180px;text-align:center;letter-spacing:4px" onkeydown="if(event.key==='Enter')unlockDiary()"/>
+      <button class="btn btn-pink" onclick="unlockDiary()">Entrar</button>
+    </div>
+    <div id="diary-err" style="color:#e91e8c;font-size:12px;display:none">Contraseña incorrecta 💔</div>
+  </div>
+  <div id="diary-open" style="display:none;flex-direction:column;gap:10px;flex:1">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="color:#ff6ec7;font-size:14px">🌸 Mi diario personal</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-pink btn-sm" onclick="openDiaryModal()">+ Nueva entrada</button>
+        <button class="btn btn-sm" onclick="lockDiary()">🔒 Cerrar</button>
+      </div>
+    </div>
+    <div id="diary-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
+  </div>
+</div>
+
+</div><!-- /app-content -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="m-prayer"><div class="modal">
+  <h3 id="m-prayer-title">Nueva petición</h3>
+  <input id="m-prayer-text" class="inp" placeholder="Petición..." style="margin-bottom:8px"/>
+  <select id="m-prayer-cat" class="inp" style="margin-bottom:12px"></select>
+  <div class="flex"><button class="btn btn-pink" onclick="savePrayer()">Guardar</button><button class="btn" onclick="closeModal('m-prayer')">Cancelar</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-prayer-cats"><div class="modal">
+  <h3>Categorías de oración</h3>
+  <div id="m-prayer-cats-list" style="margin-bottom:12px"></div>
+  <div class="flex"><input id="m-prayer-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addPrayerCat()">+</button></div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-prayer-cats')">Cerrar</button>
+</div></div>
+
+<div class="modal-bg" id="m-event"><div class="modal">
+  <h3 id="m-event-title">Nuevo evento</h3>
+  <input id="m-event-text" class="inp" placeholder="Descripción..." style="margin-bottom:8px"/>
+  <input id="m-event-hora" class="inp" placeholder="Hora (08:00)" style="margin-bottom:8px"/>
+  <select id="m-event-mat" class="inp" style="margin-bottom:12px"></select>
+  <div class="flex"><button class="btn btn-pink" onclick="saveEvent()">Guardar</button><button class="btn" onclick="closeModal('m-event')">Cancelar</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-materias"><div class="modal">
+  <h3>Materias</h3>
+  <div id="m-materias-list" style="margin-bottom:12px"></div>
+  <div class="flex">
+    <input id="m-mat-new" class="inp" placeholder="Nueva materia..." style="flex:1"/>
+    <input id="m-mat-color" type="color" value="#e91e8c" style="width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;padding:2px"/>
+    <button class="btn btn-pink" onclick="addMateria()">+</button>
+  </div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-materias')">Cerrar</button>
+</div></div>
+
+<div class="modal-bg" id="m-verse"><div class="modal">
+  <h3 id="m-verse-title">Nuevo versículo</h3>
+  <input id="m-verse-ref" class="inp" placeholder="Referencia (Juan 14:6)" style="margin-bottom:8px"/>
+  <textarea id="m-verse-text" class="inp" rows="3" placeholder="Texto..." style="resize:none;margin-bottom:8px"></textarea>
+  <select id="m-verse-cat" class="inp" style="margin-bottom:12px"></select>
+  <div class="flex"><button class="btn btn-pink" onclick="saveVerse()">Guardar</button><button class="btn" onclick="closeModal('m-verse')">Cancelar</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-vcats"><div class="modal">
+  <h3>Categorías de versículos</h3>
+  <div id="m-vcats-list" style="margin-bottom:12px"></div>
+  <div class="flex"><input id="m-vcat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addVcat()">+</button></div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-vcats')">Cerrar</button>
+</div></div>
+
+<div class="modal-bg" id="m-nota-cats"><div class="modal">
+  <h3>Categorías de notas</h3>
+  <div id="m-nota-cats-list" style="margin-bottom:12px"></div>
+  <div class="flex"><input id="m-nota-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addNotaCat()">+</button></div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-nota-cats')">Cerrar</button>
+</div></div>
+
+<div class="modal-bg" id="m-meta"><div class="modal">
+  <h3 id="m-meta-title">Nueva meta</h3>
+  <input id="m-meta-text" class="inp" placeholder="Descripción..." style="margin-bottom:8px"/>
+  <select id="m-meta-cat" class="inp" style="margin-bottom:8px"></select>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
+    <input id="m-meta-prog" class="inp" type="number" placeholder="Progreso" value="0"/>
+    <input id="m-meta-total" class="inp" type="number" placeholder="Total" value="100"/>
+    <input id="m-meta-unit" class="inp" placeholder="unidad" value="%"/>
+  </div>
+  <div class="flex"><button class="btn btn-pink" onclick="saveMeta()">Guardar</button><button class="btn" onclick="closeModal('m-meta')">Cancelar</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-meta-cats"><div class="modal">
+  <h3>Categorías de metas</h3>
+  <div id="m-meta-cats-list" style="margin-bottom:12px"></div>
+  <div class="flex"><input id="m-meta-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addMetaCat()">+</button></div>
+  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-meta-cats')">Cerrar</button>
+</div></div>
+
+<div class="modal-bg" id="m-diary"><div class="modal">
+  <h3 id="m-diary-title">Nueva entrada</h3>
+  <div class="muted" style="margin-bottom:6px">¿Cómo te sientes?</div>
+  <div id="m-mood-sel" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
+  <textarea id="m-diary-text" class="inp" rows="6" placeholder="Escribe lo que hay en tu corazón..." style="resize:none;line-height:1.8;margin-bottom:12px"></textarea>
+  <div class="flex"><button class="btn btn-pink" onclick="saveDiary()">💾 Guardar</button><button class="btn" onclick="closeModal('m-diary')">Cancelar</button></div>
+</div></div>
+
+<div class="modal-bg" id="m-diary-view"><div class="modal">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div><div id="m-dv-date" class="muted"></div><div id="m-dv-mood" style="font-size:26px;margin-top:4px"></div></div>
+    <div style="display:flex;gap:6px">
+      <button class="btn btn-pink btn-sm" onclick="editDiary()">✏️</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteDiary()">🗑</button>
+    </div>
+  </div>
+  <div id="m-dv-content" style="white-space:pre-wrap;line-height:1.9;font-size:13px;max-height:45vh;overflow-y:auto"></div>
+  <button class="btn" style="margin-top:14px;width:100%" onclick="closeModal('m-diary-view')">Cerrar</button>
+</div></div>
+
+<script>
+// ── STORAGE con fallback a variables en memoria ─────────────────────────────
+var MEM = {};
+function lsGet(k){
+  try{ var v=localStorage.getItem('lia_'+k); return v?JSON.parse(v):null; }catch(e){ return MEM[k]||null; }
+}
+function lsSet(k,v){
+  try{ localStorage.setItem('lia_'+k,JSON.stringify(v)); }catch(e){}
+  MEM[k]=v;
+}
+function lsDef(k,d){
+  var v=lsGet(k); if(v!==null){ MEM[k]=v; return v; }
+  lsSet(k,d); return d;
+}
+
+// ── DATOS POR DEFECTO ───────────────────────────────────────────────────────
+var DATA = {
+  verses: lsDef('verses',[
+    {ref:"Filipenses 4:13",text:"Todo lo puedo en Cristo que me fortalece.",cat:"Fortaleza"},
+    {ref:"Salmos 23:1",text:"El Señor es mi pastor; nada me faltará.",cat:"Confianza"},
+    {ref:"Juan 3:16",text:"De tal manera amó Dios al mundo que dio a su Hijo unigénito.",cat:"Amor"},
+    {ref:"Romanos 8:28",text:"A los que aman a Dios, todas las cosas les ayudan a bien.",cat:"Fe"},
+    {ref:"Proverbios 31:25",text:"Se reviste de fuerza y dignidad, y afronta segura el porvenir.",cat:"Mujer"},
+    {ref:"Isaías 40:31",text:"Los que esperan en el Señor renovarán sus fuerzas.",cat:"Fortaleza"},
+    {ref:"Jeremías 29:11",text:"Yo sé los planes que tengo para vosotros: planes de bienestar.",cat:"Fe"},
+    {ref:"Mateo 6:33",text:"Buscad primero el reino de Dios y su justicia.",cat:"Fe"},
+    {ref:"Salmos 46:1",text:"Dios es nuestro amparo y fortaleza, pronto auxilio en tribulaciones.",cat:"Confianza"},
+    {ref:"Proverbios 3:5",text:"Confía en el Señor con todo tu corazón.",cat:"Confianza"},
+  ]),
+  vcats: lsDef('vcats',["Fortaleza","Confianza","Amor","Fe","Mujer"]),
+  prayers: lsDef('prayers',[
+    {id:1,text:"Sabiduría para los exámenes",cat:"Estudios",done:false,date:"hoy"},
+    {id:2,text:"Salud de mis padres",cat:"Familia",done:false,date:"hoy"},
+  ]),
+  pcats: lsDef('pcats',["Familia","Estudios","Salud","Iglesia","Personal","Amigos","Gratitud"]),
+  materias: lsDef('materias',[
+    {name:"Base de Datos I",color:"#4f8ef7"},
+    {name:"Estructura de Datos II",color:"#3ecf8e"},
+    {name:"Programación",color:"#f7c94f"},
+    {name:"Inglés",color:"#f76f6f"},
+    {name:"Matemáticas",color:"#a78bfa"},
+    {name:"Iglesia",color:"#ffd700"},
+    {name:"Personal",color:"#ff6ec7"},
+    {name:"General",color:"#a06090"},
+  ]),
+  events: lsDef('events',[
+    {id:1,day:1,title:"Clase BD I",mat:"Base de Datos I",hora:"08:00",done:false},
+    {id:2,day:1,title:"Práctica Estructuras",mat:"Estructura de Datos II",hora:"10:00",done:false},
+    {id:3,day:3,title:"Entrega tarea SQL",mat:"Base de Datos I",hora:"23:59",done:false},
+    {id:4,day:5,title:"Ensayo iglesia",mat:"Iglesia",hora:"18:00",done:false},
+    {id:5,day:0,title:"Culto dominical",mat:"Iglesia",hora:"09:00",done:false},
+  ]),
+  notas: lsDef('notas',[
+    {id:1,title:"Consultas SQL básicas",body:"SELECT * FROM tabla;\nSELECT campo FROM tabla WHERE condición;",cat:"Base de Datos I"},
+    {id:2,title:"Versículo favorito",body:"Filipenses 4:13 - Todo lo puedo en Cristo que me fortalece.",cat:"Devocional"},
+  ]),
+  ncats: lsDef('ncats',["Base de Datos I","Estructura de Datos II","Programación","Matemáticas","Iglesia","Devocional","General"]),
+  metas: lsDef('metas',[
+    {id:1,title:"Leer la Biblia completa",cat:"Espiritual",prog:15,total:100,unit:"%"},
+    {id:2,title:"Aprobar Base de Datos I",cat:"Académico",prog:0,total:1,unit:"examen"},
+    {id:3,title:"Memorizar 20 versículos",cat:"Espiritual",prog:5,total:20,unit:"versículos"},
+  ]),
+  mcats: lsDef('mcats',["Espiritual","Académico","Personal","Iglesia"]),
+  diary: lsDef('diary',[]),
+  reflection: lsDef('reflection',''),
+};
+
+function save(k){ lsSet(k, DATA[k]); }
+function uid(){ return Date.now()+Math.floor(Math.random()*9999); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function today(){ return new Date().toLocaleDateString('es-ES'); }
+
+// ── NAV ─────────────────────────────────────────────────────────────────────
+var currentPage = 'dev';
+function goTo(id, btn){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); p.style.display='none'; });
+  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+  var pg = document.getElementById(
