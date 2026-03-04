@@ -6,286 +6,77 @@
 <title>🌸 PrincessLia</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:13px;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#3d0035;border-radius:4px}
-input,textarea,select,button{font-family:Georgia,serif;font-size:13px}
-.inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:8px 12px;width:100%;outline:none}
+body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:13px;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#3d0035;border-radius:4px}
+input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing:border-box}
+.inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:8px 11px;width:100%;outline:none}
 .inp:focus{border-color:#e91e8c}
-.btn{cursor:pointer;border:1px solid #3d0035;border-radius:8px;padding:7px 14px;background:#1a0018;color:#fce4ff}
-.btn-pink{background:#e91e8c;color:#fff;border-color:#e91e8c}
-.btn-danger{background:#6b0000;color:#fff;border-color:#6b0000}
-.btn-sm{padding:4px 10px;font-size:11px}
-.card{background:#1a0018;border:1px solid #3d0035;border-radius:12px;padding:14px}
-#app-header{padding:10px 14px;border-bottom:1px solid #3d0035;display:flex;align-items:center;justify-content:space-between;background:#130010;flex-shrink:0}
-#app-nav{display:flex;gap:4px;padding:6px 10px;border-bottom:1px solid #3d0035;overflow-x:auto;flex-shrink:0;background:#130010}
-.tab{background:none;border:1px solid transparent;border-radius:8px;padding:6px 10px;color:#a06090;font-size:11px;cursor:pointer;white-space:nowrap}
-.tab.active{background:#e91e8c22;color:#ff6ec7;border-color:#e91e8c44}
-#app-content{flex:1;overflow:hidden;padding:12px}
-.page{height:100%;overflow-y:auto;display:none;flex-direction:column;gap:10px}
-.page.active{display:flex}
+.btn{cursor:pointer;border:1px solid #3d0035;border-radius:8px;padding:7px 13px;background:#1a0018;color:#fce4ff;white-space:nowrap}
+.btn-p{background:#e91e8c;color:#fff;border-color:#e91e8c}
+.btn-d{background:#5a0000;color:#fff;border-color:#5a0000}
+.btn-s{padding:4px 9px;font-size:11px}
+.card{background:#1a0018;border:1px solid #3d0035;border-radius:11px;padding:13px}
 .muted{color:#a06090;font-size:11px}
-.modal-bg{display:none;position:fixed;inset:0;background:#000000bb;z-index:99;align-items:center;justify-content:center}
-.modal-bg.open{display:flex}
-.modal{background:#1a0018;border:1px solid #e91e8c44;border-radius:14px;padding:20px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto}
-.modal h3{color:#ff6ec7;margin-bottom:14px}
-.progress-bar{background:#080005;border-radius:6px;height:8px;overflow:hidden;margin:6px 0}
-.progress-fill{height:100%;background:linear-gradient(90deg,#8b0066,#e91e8c);border-radius:6px}
-.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.verse-box{background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;border-radius:12px;padding:20px;text-align:center}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#hdr{padding:10px 14px;border-bottom:1px solid #3d0035;display:flex;justify-content:space-between;align-items:center;background:#130010;flex-shrink:0}
+#nav{display:flex;gap:3px;padding:6px 10px;border-bottom:1px solid #3d0035;overflow-x:auto;flex-shrink:0;background:#130010}
+.tab{background:none;border:1px solid transparent;border-radius:8px;padding:6px 10px;color:#a06090;font-size:11px;cursor:pointer;white-space:nowrap}
+.tab.on{background:#e91e8c22;color:#ff6ec7;border-color:#e91e8c44}
+#body{flex:1;overflow:hidden;padding:11px}
+.pg{display:none;height:100%;overflow-y:auto;flex-direction:column;gap:10px}
+.pg.on{display:flex}
+.overlay{display:none;position:fixed;inset:0;background:#000000bb;z-index:50;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.box{background:#1a0018;border:1px solid #e91e8c44;border-radius:13px;padding:20px;width:92%;max-width:370px;max-height:82vh;overflow-y:auto}
+.box h3{color:#ff6ec7;margin-bottom:13px;font-size:14px}
+.pbar{background:#080005;border-radius:6px;height:8px;overflow:hidden;margin:5px 0}
+.pfill{height:100%;background:linear-gradient(90deg,#8b0066,#e91e8c);border-radius:6px}
 </style>
 </head>
 <body>
 
-<div id="app-header">
+<div id="hdr">
   <div>
     <div style="color:#ff6ec7;font-weight:700;font-size:15px">🌸 PrincessLia</div>
     <div class="muted">UCI · 2do año · Agenda personal</div>
   </div>
-  <div style="text-align:right;max-width:200px">
+  <div style="text-align:right;max-width:190px">
     <div style="color:#ffd700;font-size:9px;letter-spacing:1px">✦ HOY ✦</div>
-    <div id="hdr-verse" style="color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4"></div>
+    <div id="hv" style="color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4"></div>
   </div>
 </div>
 
-<div id="app-nav">
-  <button class="tab active" onclick="goTo('dev',this)">✝️ Devocional</button>
-  <button class="tab" onclick="goTo('agenda',this)">📅 Agenda</button>
-  <button class="tab" onclick="goTo('verses',this)">📖 Versículos</button>
-  <button class="tab" onclick="goTo('notas',this)">📝 Notas</button>
-  <button class="tab" onclick="goTo('metas',this)">🎯 Metas</button>
-  <button class="tab" onclick="goTo('diario',this)">🔒 Diario</button>
+<div id="nav">
+  <button class="tab on" data-pg="dev">✝️ Devocional</button>
+  <button class="tab" data-pg="agenda">📅 Agenda</button>
+  <button class="tab" data-pg="verses">📖 Versículos</button>
+  <button class="tab" data-pg="notas">📝 Notas</button>
+  <button class="tab" data-pg="metas">🎯 Metas</button>
+  <button class="tab" data-pg="diario">🔒 Diario</button>
 </div>
 
-<div id="app-content">
-
-<!-- DEVOCIONAL -->
-<div id="page-dev" class="page active">
-  <div class="verse-box">
-    <div style="color:#ffd700;font-size:10px;letter-spacing:2px;margin-bottom:10px">✦ VERSÍCULO DEL DÍA ✦</div>
-    <div id="dv-text" style="font-size:14px;line-height:1.8;color:#ffb3e6;font-style:italic;margin-bottom:8px"></div>
-    <div id="dv-ref" style="color:#ff6ec7;font-size:12px"></div>
-  </div>
-  <div class="card">
-    <div class="muted" style="margin-bottom:8px">✍️ MI REFLEXIÓN DE HOY</div>
-    <textarea id="refl-inp" class="inp" rows="4" placeholder="¿Qué te habló Dios hoy?..." style="resize:none;line-height:1.7"></textarea>
-    <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
-      <button class="btn btn-pink btn-sm" onclick="saveRefl()">💾 Guardar</button>
-      <span id="refl-ok" style="color:#ff6ec7;font-size:11px;display:none">✓ Guardado</span>
-    </div>
-  </div>
-  <div class="card" style="flex:1">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="muted">🙏 PETICIONES DE ORACIÓN</div>
-      <button class="btn btn-pink btn-sm" onclick="openPrayerModal()">+ Nueva</button>
-    </div>
-    <div id="prayer-cats-filter" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px"></div>
-    <div id="prayer-list"></div>
-  </div>
+<div id="body">
+  <div id="pg-dev" class="pg on"></div>
+  <div id="pg-agenda" class="pg"></div>
+  <div id="pg-verses" class="pg"></div>
+  <div id="pg-notas" class="pg" style="overflow:hidden"></div>
+  <div id="pg-metas" class="pg"></div>
+  <div id="pg-diario" class="pg"></div>
 </div>
 
-<!-- AGENDA -->
-<div id="page-agenda" class="page">
-  <div id="day-btns" style="display:flex;gap:4px"></div>
-  <div style="display:flex;justify-content:space-between;align-items:center">
-    <div id="day-label" class="muted"></div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-pink btn-sm" onclick="openEventModal()">+ Evento</button>
-      <button class="btn btn-sm" onclick="openMateriaModal()">⚙️ Materias</button>
-    </div>
-  </div>
-  <div class="card" style="flex:1;overflow-y:auto"><div id="event-list"></div></div>
-</div>
-
-<!-- VERSÍCULOS -->
-<div id="page-verses" class="page">
-  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-    <div id="vcats-filter" style="display:flex;gap:5px;flex-wrap:wrap;flex:1"></div>
-    <button class="btn btn-pink btn-sm" onclick="openVerseModal()">+ Versículo</button>
-    <button class="btn btn-sm" onclick="openVcatModal()">⚙️ Categorías</button>
-  </div>
-  <div id="verse-card" onclick="flipVerse()" style="flex:1;cursor:pointer;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;border:2px solid #3d0035;min-height:160px"></div>
-  <div style="display:flex;gap:8px;justify-content:center;align-items:center">
-    <button class="btn" onclick="prevVerse()">← Ant</button>
-    <span id="verse-counter" class="muted"></span>
-    <button class="btn btn-pink" onclick="nextVerse()">Sig →</button>
-    <button class="btn btn-danger btn-sm" onclick="deleteVerse()">🗑</button>
-  </div>
-</div>
-
-<!-- NOTAS -->
-<div id="page-notas" class="page" style="display:none;flex-direction:column">
-  <div style="display:grid;grid-template-columns:190px 1fr;gap:10px;flex:1;min-height:0">
-    <div style="display:flex;flex-direction:column;gap:6px">
-      <select id="nota-filter" class="inp" onchange="renderNotas()" style="font-size:11px"></select>
-      <button class="btn btn-pink btn-sm" onclick="newNota()">+ Nueva</button>
-      <div id="nota-list" style="overflow-y:auto;flex:1"></div>
-    </div>
-    <div class="card" style="display:flex;flex-direction:column;gap:8px">
-      <div style="display:grid;grid-template-columns:1fr auto;gap:8px">
-        <input id="nota-title" class="inp" placeholder="Título..."/>
-        <select id="nota-cat-sel" class="inp" style="width:auto"></select>
-      </div>
-      <textarea id="nota-body" class="inp" rows="12" style="flex:1;resize:none;line-height:1.7;font-family:'Courier New',monospace" placeholder="Escribe tu nota..."></textarea>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-pink" onclick="saveNota()">💾 Guardar</button>
-        <button id="nota-del" class="btn btn-danger" onclick="deleteNota()" style="display:none">🗑 Eliminar</button>
-        <button class="btn btn-sm" onclick="openNotaCatModal()">⚙️ Categorías</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- METAS -->
-<div id="page-metas" class="page">
-  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-    <div id="meta-cats-filter" style="display:flex;gap:5px;flex-wrap:wrap"></div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-pink btn-sm" onclick="openMetaModal()">+ Meta</button>
-      <button class="btn btn-sm" onclick="openMetaCatModal()">⚙️ Categorías</button>
-    </div>
-  </div>
-  <div id="meta-list" style="display:flex;flex-direction:column;gap:10px"></div>
-</div>
-
-<!-- DIARIO -->
-<div id="page-diario" class="page">
-  <div id="diary-lock" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:14px">
-    <div style="font-size:48px">🔒</div>
-    <div style="color:#ffb3e6;font-size:15px;font-style:italic">Diario privado de PrincessLia</div>
-    <div class="muted">Este espacio es solo tuyo 🌸</div>
-    <div style="display:flex;gap:8px">
-      <input id="diary-pass" class="inp" type="password" placeholder="Contraseña..." style="width:180px;text-align:center;letter-spacing:4px" onkeydown="if(event.key==='Enter')unlockDiary()"/>
-      <button class="btn btn-pink" onclick="unlockDiary()">Entrar</button>
-    </div>
-    <div id="diary-err" style="color:#e91e8c;font-size:12px;display:none">Contraseña incorrecta 💔</div>
-  </div>
-  <div id="diary-open" style="display:none;flex-direction:column;gap:10px;flex:1">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div style="color:#ff6ec7;font-size:14px">🌸 Mi diario personal</div>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-pink btn-sm" onclick="openDiaryModal()">+ Nueva entrada</button>
-        <button class="btn btn-sm" onclick="lockDiary()">🔒 Cerrar</button>
-      </div>
-    </div>
-    <div id="diary-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:8px"></div>
-  </div>
-</div>
-
-</div><!-- /app-content -->
-
-<!-- MODALS -->
-<div class="modal-bg" id="m-prayer"><div class="modal">
-  <h3 id="m-prayer-title">Nueva petición</h3>
-  <input id="m-prayer-text" class="inp" placeholder="Petición..." style="margin-bottom:8px"/>
-  <select id="m-prayer-cat" class="inp" style="margin-bottom:12px"></select>
-  <div class="flex"><button class="btn btn-pink" onclick="savePrayer()">Guardar</button><button class="btn" onclick="closeModal('m-prayer')">Cancelar</button></div>
-</div></div>
-
-<div class="modal-bg" id="m-prayer-cats"><div class="modal">
-  <h3>Categorías de oración</h3>
-  <div id="m-prayer-cats-list" style="margin-bottom:12px"></div>
-  <div class="flex"><input id="m-prayer-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addPrayerCat()">+</button></div>
-  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-prayer-cats')">Cerrar</button>
-</div></div>
-
-<div class="modal-bg" id="m-event"><div class="modal">
-  <h3 id="m-event-title">Nuevo evento</h3>
-  <input id="m-event-text" class="inp" placeholder="Descripción..." style="margin-bottom:8px"/>
-  <input id="m-event-hora" class="inp" placeholder="Hora (08:00)" style="margin-bottom:8px"/>
-  <select id="m-event-mat" class="inp" style="margin-bottom:12px"></select>
-  <div class="flex"><button class="btn btn-pink" onclick="saveEvent()">Guardar</button><button class="btn" onclick="closeModal('m-event')">Cancelar</button></div>
-</div></div>
-
-<div class="modal-bg" id="m-materias"><div class="modal">
-  <h3>Materias</h3>
-  <div id="m-materias-list" style="margin-bottom:12px"></div>
-  <div class="flex">
-    <input id="m-mat-new" class="inp" placeholder="Nueva materia..." style="flex:1"/>
-    <input id="m-mat-color" type="color" value="#e91e8c" style="width:36px;height:36px;border:none;border-radius:6px;cursor:pointer;padding:2px"/>
-    <button class="btn btn-pink" onclick="addMateria()">+</button>
-  </div>
-  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-materias')">Cerrar</button>
-</div></div>
-
-<div class="modal-bg" id="m-verse"><div class="modal">
-  <h3 id="m-verse-title">Nuevo versículo</h3>
-  <input id="m-verse-ref" class="inp" placeholder="Referencia (Juan 14:6)" style="margin-bottom:8px"/>
-  <textarea id="m-verse-text" class="inp" rows="3" placeholder="Texto..." style="resize:none;margin-bottom:8px"></textarea>
-  <select id="m-verse-cat" class="inp" style="margin-bottom:12px"></select>
-  <div class="flex"><button class="btn btn-pink" onclick="saveVerse()">Guardar</button><button class="btn" onclick="closeModal('m-verse')">Cancelar</button></div>
-</div></div>
-
-<div class="modal-bg" id="m-vcats"><div class="modal">
-  <h3>Categorías de versículos</h3>
-  <div id="m-vcats-list" style="margin-bottom:12px"></div>
-  <div class="flex"><input id="m-vcat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addVcat()">+</button></div>
-  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-vcats')">Cerrar</button>
-</div></div>
-
-<div class="modal-bg" id="m-nota-cats"><div class="modal">
-  <h3>Categorías de notas</h3>
-  <div id="m-nota-cats-list" style="margin-bottom:12px"></div>
-  <div class="flex"><input id="m-nota-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addNotaCat()">+</button></div>
-  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-nota-cats')">Cerrar</button>
-</div></div>
-
-<div class="modal-bg" id="m-meta"><div class="modal">
-  <h3 id="m-meta-title">Nueva meta</h3>
-  <input id="m-meta-text" class="inp" placeholder="Descripción..." style="margin-bottom:8px"/>
-  <select id="m-meta-cat" class="inp" style="margin-bottom:8px"></select>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
-    <input id="m-meta-prog" class="inp" type="number" placeholder="Progreso" value="0"/>
-    <input id="m-meta-total" class="inp" type="number" placeholder="Total" value="100"/>
-    <input id="m-meta-unit" class="inp" placeholder="unidad" value="%"/>
-  </div>
-  <div class="flex"><button class="btn btn-pink" onclick="saveMeta()">Guardar</button><button class="btn" onclick="closeModal('m-meta')">Cancelar</button></div>
-</div></div>
-
-<div class="modal-bg" id="m-meta-cats"><div class="modal">
-  <h3>Categorías de metas</h3>
-  <div id="m-meta-cats-list" style="margin-bottom:12px"></div>
-  <div class="flex"><input id="m-meta-cat-new" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-pink" onclick="addMetaCat()">+</button></div>
-  <button class="btn" style="margin-top:10px;width:100%" onclick="closeModal('m-meta-cats')">Cerrar</button>
-</div></div>
-
-<div class="modal-bg" id="m-diary"><div class="modal">
-  <h3 id="m-diary-title">Nueva entrada</h3>
-  <div class="muted" style="margin-bottom:6px">¿Cómo te sientes?</div>
-  <div id="m-mood-sel" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"></div>
-  <textarea id="m-diary-text" class="inp" rows="6" placeholder="Escribe lo que hay en tu corazón..." style="resize:none;line-height:1.8;margin-bottom:12px"></textarea>
-  <div class="flex"><button class="btn btn-pink" onclick="saveDiary()">💾 Guardar</button><button class="btn" onclick="closeModal('m-diary')">Cancelar</button></div>
-</div></div>
-
-<div class="modal-bg" id="m-diary-view"><div class="modal">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <div><div id="m-dv-date" class="muted"></div><div id="m-dv-mood" style="font-size:26px;margin-top:4px"></div></div>
-    <div style="display:flex;gap:6px">
-      <button class="btn btn-pink btn-sm" onclick="editDiary()">✏️</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteDiary()">🗑</button>
-    </div>
-  </div>
-  <div id="m-dv-content" style="white-space:pre-wrap;line-height:1.9;font-size:13px;max-height:45vh;overflow-y:auto"></div>
-  <button class="btn" style="margin-top:14px;width:100%" onclick="closeModal('m-diary-view')">Cerrar</button>
-</div></div>
+<!-- modals container -->
+<div id="modals"></div>
 
 <script>
-// ── STORAGE con fallback a variables en memoria ─────────────────────────────
-var MEM = {};
-function lsGet(k){
-  try{ var v=localStorage.getItem('lia_'+k); return v?JSON.parse(v):null; }catch(e){ return MEM[k]||null; }
-}
-function lsSet(k,v){
-  try{ localStorage.setItem('lia_'+k,JSON.stringify(v)); }catch(e){}
-  MEM[k]=v;
-}
-function lsDef(k,d){
-  var v=lsGet(k); if(v!==null){ MEM[k]=v; return v; }
-  lsSet(k,d); return d;
-}
+// ─── STORAGE ────────────────────────────────────────────────────────────────
+var M={};
+function sg(k){try{var v=localStorage.getItem('L_'+k);if(v)return JSON.parse(v);}catch(e){}return M[k]!==undefined?M[k]:null;}
+function ss(k,v){try{localStorage.setItem('L_'+k,JSON.stringify(v));}catch(e){}M[k]=v;}
+function sd(k,d){var v=sg(k);if(v!==null){M[k]=v;return v;}ss(k,d);return d;}
 
-// ── DATOS POR DEFECTO ───────────────────────────────────────────────────────
-var DATA = {
-  verses: lsDef('verses',[
+// ─── DATA ────────────────────────────────────────────────────────────────────
+var D={
+  verses: sd('verses',[
     {ref:"Filipenses 4:13",text:"Todo lo puedo en Cristo que me fortalece.",cat:"Fortaleza"},
     {ref:"Salmos 23:1",text:"El Señor es mi pastor; nada me faltará.",cat:"Confianza"},
     {ref:"Juan 3:16",text:"De tal manera amó Dios al mundo que dio a su Hijo unigénito.",cat:"Amor"},
@@ -297,52 +88,242 @@ var DATA = {
     {ref:"Salmos 46:1",text:"Dios es nuestro amparo y fortaleza, pronto auxilio en tribulaciones.",cat:"Confianza"},
     {ref:"Proverbios 3:5",text:"Confía en el Señor con todo tu corazón.",cat:"Confianza"},
   ]),
-  vcats: lsDef('vcats',["Fortaleza","Confianza","Amor","Fe","Mujer"]),
-  prayers: lsDef('prayers',[
+  vcats: sd('vcats',["Fortaleza","Confianza","Amor","Fe","Mujer"]),
+  prayers: sd('prayers',[
     {id:1,text:"Sabiduría para los exámenes",cat:"Estudios",done:false,date:"hoy"},
     {id:2,text:"Salud de mis padres",cat:"Familia",done:false,date:"hoy"},
   ]),
-  pcats: lsDef('pcats',["Familia","Estudios","Salud","Iglesia","Personal","Amigos","Gratitud"]),
-  materias: lsDef('materias',[
-    {name:"Base de Datos I",color:"#4f8ef7"},
-    {name:"Estructura de Datos II",color:"#3ecf8e"},
-    {name:"Programación",color:"#f7c94f"},
-    {name:"Inglés",color:"#f76f6f"},
-    {name:"Matemáticas",color:"#a78bfa"},
-    {name:"Iglesia",color:"#ffd700"},
-    {name:"Personal",color:"#ff6ec7"},
-    {name:"General",color:"#a06090"},
+  pcats: sd('pcats',["Familia","Estudios","Salud","Iglesia","Personal","Amigos","Gratitud"]),
+  materias: sd('materias',[
+    {name:"Base de Datos I",color:"#4f8ef7"},{name:"Estructura de Datos II",color:"#3ecf8e"},
+    {name:"Programación",color:"#f7c94f"},{name:"Inglés",color:"#f76f6f"},
+    {name:"Matemáticas",color:"#a78bfa"},{name:"Iglesia",color:"#ffd700"},
+    {name:"Personal",color:"#ff6ec7"},{name:"General",color:"#a06090"},
   ]),
-  events: lsDef('events',[
+  events: sd('events',[
     {id:1,day:1,title:"Clase BD I",mat:"Base de Datos I",hora:"08:00",done:false},
     {id:2,day:1,title:"Práctica Estructuras",mat:"Estructura de Datos II",hora:"10:00",done:false},
     {id:3,day:3,title:"Entrega tarea SQL",mat:"Base de Datos I",hora:"23:59",done:false},
     {id:4,day:5,title:"Ensayo iglesia",mat:"Iglesia",hora:"18:00",done:false},
     {id:5,day:0,title:"Culto dominical",mat:"Iglesia",hora:"09:00",done:false},
   ]),
-  notas: lsDef('notas',[
+  notas: sd('notas',[
     {id:1,title:"Consultas SQL básicas",body:"SELECT * FROM tabla;\nSELECT campo FROM tabla WHERE condición;",cat:"Base de Datos I"},
     {id:2,title:"Versículo favorito",body:"Filipenses 4:13 - Todo lo puedo en Cristo que me fortalece.",cat:"Devocional"},
   ]),
-  ncats: lsDef('ncats',["Base de Datos I","Estructura de Datos II","Programación","Matemáticas","Iglesia","Devocional","General"]),
-  metas: lsDef('metas',[
+  ncats: sd('ncats',["Base de Datos I","Estructura de Datos II","Programación","Matemáticas","Iglesia","Devocional","General"]),
+  metas: sd('metas',[
     {id:1,title:"Leer la Biblia completa",cat:"Espiritual",prog:15,total:100,unit:"%"},
     {id:2,title:"Aprobar Base de Datos I",cat:"Académico",prog:0,total:1,unit:"examen"},
     {id:3,title:"Memorizar 20 versículos",cat:"Espiritual",prog:5,total:20,unit:"versículos"},
   ]),
-  mcats: lsDef('mcats',["Espiritual","Académico","Personal","Iglesia"]),
-  diary: lsDef('diary',[]),
-  reflection: lsDef('reflection',''),
+  mcats: sd('mcats',["Espiritual","Académico","Personal","Iglesia"]),
+  diary: sd('diary',[]),
+  refl: sd('refl',''),
 };
+function sv(k){ss(k,D[k]);}
+function uid(){return Date.now()+Math.floor(Math.random()*99999);}
+function x(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tod(){return new Date().toLocaleDateString('es-ES');}
 
-function save(k){ lsSet(k, DATA[k]); }
-function uid(){ return Date.now()+Math.floor(Math.random()*9999); }
-function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function today(){ return new Date().toLocaleDateString('es-ES'); }
+// ─── DAILY VERSE ─────────────────────────────────────────────────────────────
+var DV=[
+  {ref:"Filipenses 4:13",text:"Todo lo puedo en Cristo que me fortalece."},
+  {ref:"Salmos 23:1",text:"El Señor es mi pastor; nada me faltará."},
+  {ref:"Proverbios 3:5",text:"Fíate de Jehová de todo tu corazón."},
+  {ref:"Jeremías 29:11",text:"Yo sé los planes que tengo para vosotros."},
+  {ref:"Isaías 40:31",text:"Los que esperan en el Señor renovarán sus fuerzas."},
+  {ref:"Hebreos 11:1",text:"La fe es la certeza de lo que se espera."},
+  {ref:"Mateo 6:33",text:"Busca primero el reino de Dios y su justicia."},
+  {ref:"Salmos 46:1",text:"Dios es nuestro amparo y fortaleza."},
+  {ref:"Juan 13:34",text:"Ámense los unos a los otros como yo los he amado."},
+  {ref:"Romanos 12:2",text:"No se amolden al mundo sino transfórmense."},
+  {ref:"Proverbios 31:25",text:"Se reviste de fuerza y dignidad, y afronta segura el porvenir."},
+  {ref:"Deuteronomio 31:6",text:"Sed fuertes y valientes. No temáis ni os aterréis."},
+];
+function gdv(){var d=new Date();return DV[(d.getDate()+d.getMonth())%DV.length];}
 
-// ── NAV ─────────────────────────────────────────────────────────────────────
-var currentPage = 'dev';
-function goTo(id, btn){
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); p.style.display='none'; });
-  document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
-  var pg = document.getElementById(
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+var activeModal=null;
+function showModal(html){
+  var c=document.getElementById('modals');
+  c.innerHTML='<div class="overlay on" id="cur-overlay">'+html+'</div>';
+  activeModal=document.getElementById('cur-overlay');
+  activeModal.addEventListener('click',function(e){if(e.target===activeModal)closeModal();});
+}
+function closeModal(){var c=document.getElementById('modals');c.innerHTML='';activeModal=null;}
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+var curPg='dev';
+document.getElementById('nav').addEventListener('click',function(e){
+  var t=e.target.closest('.tab'); if(!t) return;
+  var pg=t.dataset.pg; if(!pg) return;
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  t.classList.add('on');
+  document.getElementById('pg-'+pg).classList.add('on');
+  curPg=pg;
+  renders[pg]&&renders[pg]();
+});
+
+// ─── DEVOCIONAL ──────────────────────────────────────────────────────────────
+var pCatF='Todas', editPid=null;
+
+function renderDev(){
+  var v=gdv();
+  document.getElementById('hv').textContent='"'+v.text.slice(0,45)+'..."';
+  var pg=document.getElementById('pg-dev');
+  pg.innerHTML=
+    '<div style="background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;border-radius:12px;padding:18px;text-align:center">'
+    +'<div style="color:#ffd700;font-size:10px;letter-spacing:2px;margin-bottom:10px">✦ VERSÍCULO DEL DÍA ✦</div>'
+    +'<div style="font-size:14px;line-height:1.8;color:#ffb3e6;font-style:italic;margin-bottom:8px">"'+x(v.text)+'"</div>'
+    +'<div style="color:#ff6ec7;font-size:12px">— '+x(v.ref)+'</div></div>'
+    +'<div class="card">'
+    +'<div class="muted" style="margin-bottom:8px">✍️ MI REFLEXIÓN DE HOY</div>'
+    +'<textarea id="refl-ta" class="inp" rows="4" placeholder="¿Qué te habló Dios hoy?..." style="resize:none;line-height:1.7">'+x(D.refl)+'</textarea>'
+    +'<div style="margin-top:8px;display:flex;gap:8px;align-items:center">'
+    +'<button class="btn btn-p btn-s" id="refl-btn">💾 Guardar</button>'
+    +'<span id="refl-ok" style="color:#ff6ec7;font-size:11px;display:none">✓ Guardado</span>'
+    +'</div></div>'
+    +'<div class="card" style="flex:1">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<div class="muted">🙏 PETICIONES DE ORACIÓN</div>'
+    +'<button class="btn btn-p btn-s" id="btn-new-prayer">+ Nueva</button></div>'
+    +'<div id="pcats-f" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px"></div>'
+    +'<div id="prayer-list"></div></div>';
+
+  document.getElementById('refl-btn').onclick=function(){
+    D.refl=document.getElementById('refl-ta').value; sv('refl');
+    var ok=document.getElementById('refl-ok'); ok.style.display='inline';
+    setTimeout(function(){ok.style.display='none';},2000);
+  };
+  document.getElementById('btn-new-prayer').onclick=function(){openPrayerModal(null);};
+  renderPrayers();
+}
+
+function renderPrayers(){
+  var pf=document.getElementById('pcats-f'); if(!pf) return;
+  pf.innerHTML='';
+  ['Todas'].concat(D.pcats).forEach(function(c){
+    var b=document.createElement('button');
+    b.className='btn btn-s';
+    b.textContent=c;
+    b.style.background=pCatF===c?'#e91e8c':'#1a0018';
+    b.style.color=pCatF===c?'#fff':'#a06090';
+    b.onclick=function(){pCatF=c;renderPrayers();};
+    pf.appendChild(b);
+  });
+  var list=document.getElementById('prayer-list'); if(!list) return;
+  var items=pCatF==='Todas'?D.prayers:D.prayers.filter(function(p){return p.cat===pCatF;});
+  if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:14px">Sin peticiones aún 🙏</div>';return;}
+  list.innerHTML='';
+  items.forEach(function(p){
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;margin-bottom:6px;background:'+(p.done?'#0a150a':'#0d0008')+';border:1px solid '+(p.done?'#1e3a1e':'#3d0035');
+    d.innerHTML='<button class="tog-p" data-id="'+p.id+'" style="flex-shrink:0;background:none;border:2px solid '+(p.done?'#ffd700':'#e91e8c')+';border-radius:50%;width:20px;height:20px;cursor:pointer;color:'+(p.done?'#ffd700':'transparent')+';font-size:10px">'+(p.done?'✓':'')+'</button>'
+      +'<div style="flex:1"><div style="font-size:12px;text-decoration:'+(p.done?'line-through':'none')+';color:'+(p.done?'#a06090':'#fce4ff')+'">'+x(p.text)+'</div>'
+      +'<div style="font-size:10px;color:#e91e8c">'+x(p.cat)+' · '+x(p.date)+'</div></div>'
+      +'<button class="edit-p btn-s" data-id="'+p.id+'" style="background:none;border:none;color:#a06090;cursor:pointer;font-size:13px">✏️</button>'
+      +'<button class="del-p" data-id="'+p.id+'" style="background:none;border:none;color:#5a0000;cursor:pointer;font-size:17px">×</button>';
+    list.appendChild(d);
+  });
+  list.querySelectorAll('.tog-p').forEach(function(b){b.onclick=function(){
+    var id=Number(b.dataset.id); D.prayers=D.prayers.map(function(p){return p.id===id?Object.assign({},p,{done:!p.done}):p;}); sv('prayers'); renderPrayers();
+  };});
+  list.querySelectorAll('.edit-p').forEach(function(b){b.onclick=function(){openPrayerModal(Number(b.dataset.id));};});
+  list.querySelectorAll('.del-p').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    var id=Number(b.dataset.id); D.prayers=D.prayers.filter(function(p){return p.id!==id;}); sv('prayers'); renderPrayers();
+  };});
+}
+
+function openPrayerModal(id){
+  var p=id?D.prayers.find(function(x2){return x2.id===id;}):null;
+  var catsOpts=D.pcats.map(function(c){return '<option'+(p&&p.cat===c?' selected':'')+'>'+x(c)+'</option>';}).join('');
+  showModal('<div class="box">'
+    +'<h3>'+(p?'Editar':'Nueva')+' petición</h3>'
+    +'<input id="m-pt" class="inp" value="'+x(p?p.text:'')+'" placeholder="Petición..." style="margin-bottom:8px"/>'
+    +'<select id="m-pc" class="inp" style="margin-bottom:12px">'+catsOpts+'</select>'
+    +'<div class="row">'
+    +'<button class="btn btn-p" id="m-psave">Guardar</button>'
+    +'<button class="btn" id="m-pcancel">Cancelar</button>'
+    +(p?'<button class="btn btn-d btn-s" id="m-pcat-mgr">⚙️ Categorías</button>':'')
+    +'</div></div>');
+  document.getElementById('m-psave').onclick=function(){
+    var t=document.getElementById('m-pt').value.trim(); if(!t)return;
+    var c=document.getElementById('m-pc').value;
+    if(p){D.prayers=D.prayers.map(function(pp){return pp.id===id?Object.assign({},pp,{text:t,cat:c}):pp;});}
+    else{D.prayers.unshift({id:uid(),text:t,cat:c,done:false,date:tod()});}
+    sv('prayers'); closeModal(); renderPrayers();
+  };
+  document.getElementById('m-pcancel').onclick=closeModal;
+  var mb=document.getElementById('m-pcat-mgr');
+  if(mb) mb.onclick=function(){closeModal();openPcatModal();};
+}
+
+function openPcatModal(){
+  function html(){
+    return '<div class="box"><h3>Categorías de oración</h3><div id="m-pcl">'
+      +D.pcats.map(function(c,i){return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #3d0035">'+x(c)+'<button class="btn btn-d btn-s dpc" data-i="'+i+'">×</button></div>';}).join('')
+      +'</div><div class="row" style="margin-top:10px"><input id="m-pcn" class="inp" placeholder="Nueva..." style="flex:1"/><button class="btn btn-p" id="m-pcadd">+</button></div>'
+      +'<button class="btn" style="margin-top:10px;width:100%" id="m-pcclose">Cerrar</button></div>';
+  }
+  showModal(html());
+  function bind(){
+    document.querySelectorAll('.dpc').forEach(function(b){b.onclick=function(){
+      D.pcats.splice(Number(b.dataset.i),1);sv('pcats');
+      document.getElementById('m-pcl').outerHTML=''; showModal(html()); bind();
+    };});
+    document.getElementById('m-pcadd').onclick=function(){
+      var v=document.getElementById('m-pcn').value.trim();if(!v||D.pcats.indexOf(v)>=0)return;
+      D.pcats.push(v);sv('pcats');showModal(html());bind();
+    };
+    document.getElementById('m-pcclose').onclick=closeModal;
+  }
+  bind();
+}
+
+// ─── AGENDA ──────────────────────────────────────────────────────────────────
+var selDay=new Date().getDay(), editEvId=null;
+var DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function renderAgenda(){
+  var pg=document.getElementById('pg-agenda');
+  var dayBtns=DIAS.map(function(d,i){
+    var has=D.events.some(function(e){return e.day===i;});
+    return '<button class="btn day-btn" data-d="'+i+'" style="flex:1;padding:7px 2px;font-size:11px;position:relative;background:'+(selDay===i?'#e91e8c':'#1a0018')+';color:'+(selDay===i?'#fff':'#a06090')+';border-color:'+(selDay===i?'#e91e8c':'#3d0035')+'">'+d+(has?'<span style="position:absolute;top:3px;right:4px;width:5px;height:5px;border-radius:50%;background:#ffd700;display:block"></span>':'')+'</button>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;gap:4px">'+dayBtns+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center">'
+    +'<div class="muted">📅 '+DIAS[selDay]+'</div>'
+    +'<div class="row"><button class="btn btn-p btn-s" id="btn-new-ev">+ Evento</button>'
+    +'<button class="btn btn-s" id="btn-mat-mgr">⚙️ Materias</button></div></div>'
+    +'<div class="card" style="flex:1;overflow-y:auto"><div id="ev-list"></div></div>';
+
+  pg.querySelectorAll('.day-btn').forEach(function(b){b.onclick=function(){selDay=Number(b.dataset.d);renderAgenda();};});
+  document.getElementById('btn-new-ev').onclick=function(){openEvModal(null);};
+  document.getElementById('btn-mat-mgr').onclick=openMatModal;
+  renderEvents();
+}
+
+function renderEvents(){
+  var list=document.getElementById('ev-list'); if(!list)return;
+  var evs=D.events.filter(function(e){return e.day===selDay;}).sort(function(a,b){return (a.hora||'').localeCompare(b.hora||'');});
+  if(!evs.length){list.innerHTML='<div class="muted" style="text-align:center;padding:18px">Día libre 🌸</div>';return;}
+  list.innerHTML='';
+  evs.forEach(function(ev){
+    var mat=D.materias.find(function(m){return m.name===ev.mat;})||{color:'#a06090'};
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:10px;border-radius:10px;margin-bottom:8px;opacity:'+(ev.done?.5:1)+';background:#0d0008;border:1px solid '+mat.color+'44;border-left:3px solid '+mat.color;
+    d.innerHTML='<button class="tog-e" data-id="'+ev.id+'" style="flex-shrink:0;background:none;border:2px solid '+(ev.done?'#ffd700':mat.color)+';border-radius:50%;width:20px;height:20px;cursor:pointer;color:'+(ev.done?'#ffd700':'transparent')+';font-size:10px">'+(ev.done?'✓':'')+'</button>'
+      +'<div style="flex:1"><div style="font-size:12px;text-decoration:'+(ev.done?'line-through':'none')+'">'+x(ev.title)+'</div>'
+      +'<div style="font-size:10px;color:'+mat.color+'">'+x(ev.mat)+(ev.hora?' · '+x(ev.hora):'')+'</div></div>'
+      +'<button class="edit-e" data-id="'+ev.id+'" style="background:none;border:none;color:#a06090;cursor:pointer;font-size:13px">✏️</button>'
+      +'<button class="del-e" data-id="'+ev.id+'" style="background:none;border:none;color:#5a0000;cursor:pointer;font-size:17px">×</button>';
+    list.appendChild(d);
+  });
+  list.querySelectorAll('.tog-e').forEach(function(b){b.onclick=function(){
+    var id=Number(b.dataset.id);D.events=D.events.map(function(e){return e.id===id?Object.assign({},e,{done:!e.done}):e;});sv('events');renderEvents();
+  };});
+  list.querySelectorAll('.edit-e').forEach(function(b){b.onclick=function(){openEvModal(Number(b.dataset.id));};});
+  l
