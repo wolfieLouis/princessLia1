@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🌸 PrincessLia</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0008;color:#fce4ff;font-family:Georgia,serif;font-size:14px}
+input,textarea,select,button{font-family:Georgia,serif;font-size:13px;box-sizing:border-box}
+.inp{background:#080005;border:1px solid #3d0035;color:#fce4ff;border-radius:8px;padding:9px 12px;width:100%;outline:none}
+.inp:focus{border-color:#e91e8c}
+.btn{cursor:pointer;border:1px solid #3d0035;border-radius:8px;padding:8px 14px;background:#1a0018;color:#fce4ff;display:inline-block}
+.btnp{background:#e91e8c;color:#fff;border-color:#e91e8c}
+.btnd{background:#5a0000;color:#fff;border-color:#5a0000}
+.btns{padding:5px 10px;font-size:12px}
+.card{background:#1a0018;border:1px solid #3d0035;border-radius:12px;padding:14px;margin-bottom:10px}
+.muted{color:#a06090;font-size:11px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#hdr{padding:12px 14px;border-bottom:1px solid #3d0035;background:#130010;display:flex;justify-content:space-between;align-items:center}
+#nav{padding:8px 10px;border-bottom:1px solid #3d0035;background:#130010;display:flex;gap:4px;overflow-x:auto}
+.tab{background:none;border:1px solid transparent;border-radius:8px;padding:7px 11px;color:#a06090;font-size:12px;cursor:pointer;white-space:nowrap}
+.tab.on{background:#e91e8c22;color:#ff6ec7;border-color:#e91e8c44}
+.pg{display:none;padding:12px}
+.pg.on{display:block}
+.overlay{display:none;position:fixed;inset:0;background:#000000cc;z-index:50;overflow-y:auto;padding:50px 10px}
+.overlay.on{display:block}
+.box{background:#1a0018;border:1px solid #e91e8c44;border-radius:13px;padding:20px;width:94%;max-width:380px;margin:0 auto}
+.box h3{color:#ff6ec7;margin-bottom:14px;font-size:14px}
+.pbar{background:#080005;border-radius:6px;height:8px;overflow:hidden;margin:5px 0}
+.pfill{height:100%;background:linear-gradient(90deg,#8b0066,#e91e8c);border-radius:6px}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div>
+    <div style="color:#ff6ec7;font-weight:700;font-size:15px">🌸 PrincessLia</div>
+    <div class="muted">UCI · 2do año · Agenda personal</div>
+  </div>
+  <div style="text-align:right;max-width:190px">
+    <div style="color:#ffd700;font-size:9px;letter-spacing:1px">✦ HOY ✦</div>
+    <div id="hv" style="color:#ffb3e6;font-size:10px;font-style:italic;line-height:1.4"></div>
+  </div>
+</div>
+<div id="nav">
+  <button class="tab on" data-pg="dev">✝️ Devocional</button>
+  <button class="tab" data-pg="agenda">📅 Agenda</button>
+  <button class="tab" data-pg="verses">📖 Versículos</button>
+  <button class="tab" data-pg="notas">📝 Notas</button>
+  <button class="tab" data-pg="metas">🎯 Metas</button>
+  <button class="tab" data-pg="diario">🔒 Diario</button>
+  <button class="tab" data-pg="gym">🌸 Fitness</button>
+</div>
+<div id="pg-dev" class="pg on"></div>
+<div id="pg-agenda" class="pg"></div>
+<div id="pg-verses" class="pg"></div>
+<div id="pg-notas" class="pg"></div>
+<div id="pg-metas" class="pg"></div>
+<div id="pg-diario" class="pg"></div>
+<div id="pg-gym" class="pg"></div>
+<div class="overlay" id="modal-layer"></div>
+<script>
+var S={};
+function initData(){
+  var def={
+    verses:[
+      {ref:"Filipenses 4:13",text:"Todo lo puedo en Cristo que me fortalece.",cat:"Fortaleza"},
+      {ref:"Salmos 23:1",text:"El Señor es mi pastor; nada me faltará.",cat:"Confianza"},
+      {ref:"Juan 3:16",text:"De tal manera amó Dios al mundo que dio a su Hijo unigénito.",cat:"Amor"},
+      {ref:"Romanos 8:28",text:"A los que aman a Dios, todas las cosas les ayudan a bien.",cat:"Fe"},
+      {ref:"Proverbios 31:25",text:"Se reviste de fuerza y dignidad, y afronta segura el porvenir.",cat:"Mujer"},
+      {ref:"Isaías 40:31",text:"Los que esperan en el Señor renovarán sus fuerzas.",cat:"Fortaleza"},
+      {ref:"Jeremías 29:11",text:"Yo sé los planes para vosotros: planes de bienestar.",cat:"Fe"},
+      {ref:"Mateo 6:33",text:"Buscad primero el reino de Dios y su justicia.",cat:"Fe"},
+      {ref:"Salmos 46:1",text:"Dios es nuestro amparo y fortaleza, pronto auxilio.",cat:"Confianza"},
+      {ref:"Proverbios 3:5",text:"Confía en el Señor con todo tu corazón.",cat:"Confianza"}
+    ],
+    vcats:["Fortaleza","Confianza","Amor","Fe","Mujer"],
+    prayers:[
+      {id:1,text:"Sabiduría para los exámenes",cat:"Estudios",done:false,date:"hoy"},
+      {id:2,text:"Salud de mis padres",cat:"Familia",done:false,date:"hoy"}
+    ],
+    pcats:["Familia","Estudios","Salud","Iglesia","Personal","Amigos","Gratitud"],
+    materias:[
+      {name:"Base de Datos I",color:"#4f8ef7"},
+      {name:"Estructura de Datos II",color:"#3ecf8e"},
+      {name:"Programación",color:"#f7c94f"},
+      {name:"Inglés",color:"#f76f6f"},
+      {name:"Matemáticas",color:"#a78bfa"},
+      {name:"Iglesia",color:"#ffd700"},
+      {name:"Personal",color:"#ff6ec7"},
+      {name:"General",color:"#a06090"}
+    ],
+    events:[
+      {id:1,day:1,title:"Clase BD I",mat:"Base de Datos I",hora:"08:00",done:false},
+      {id:2,day:1,title:"Práctica Estructuras",mat:"Estructura de Datos II",hora:"10:00",done:false},
+      {id:3,day:3,title:"Entrega tarea SQL",mat:"Base de Datos I",hora:"23:59",done:false},
+      {id:4,day:5,title:"Ensayo iglesia",mat:"Iglesia",hora:"18:00",done:false},
+      {id:5,day:0,title:"Culto dominical",mat:"Iglesia",hora:"09:00",done:false}
+    ],
+    notas:[
+      {id:1,title:"Consultas SQL básicas",body:"SELECT * FROM tabla;\nSELECT campo FROM tabla WHERE condición;",cat:"Base de Datos I"},
+      {id:2,title:"Versículo favorito",body:"Filipenses 4:13 - Todo lo puedo en Cristo que me fortalece.",cat:"Devocional"}
+    ],
+    ncats:["Base de Datos I","Estructura de Datos II","Programación","Matemáticas","Iglesia","Devocional","General"],
+    metas:[
+      {id:1,title:"Leer la Biblia completa",cat:"Espiritual",prog:15,total:100,unit:"%"},
+      {id:2,title:"Aprobar Base de Datos I",cat:"Académico",prog:0,total:1,unit:"examen"},
+      {id:3,title:"Memorizar 20 versículos",cat:"Espiritual",prog:5,total:20,unit:"versículos"}
+    ],
+    mcats:["Espiritual","Académico","Personal","Iglesia"],
+    diary:[],
+    reflections:[],
+    rutinas:[],
+    medidas:[],
+    planGym:{},
+    logrosGym:[]
+  };
+  Object.keys(def).forEach(function(k){
+    var v=null;
+    try{var r=localStorage.getItem('lia_'+k);if(r!==null)v=JSON.parse(r);}catch(e){}
+    S[k]=v!==null?v:def[k];
+  });
+}
+function sv(k){try{localStorage.setItem('lia_'+k,JSON.stringify(S[k]));}catch(e){}}
+function uid(){return Date.now()+Math.floor(Math.random()*99999);}
+function x(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function tod(){return new Date().toLocaleDateString('es-ES');}
+function showModal(html){
+  var l=document.getElementById('modal-layer');
+  l.innerHTML='<div class="box">'+html+'</div>';
+  l.className='overlay on';
+  l.onclick=function(e){if(e.target===l)closeModal();};
+}
+function closeModal(){
+  var l=document.getElementById('modal-layer');
+  l.className='overlay';l.innerHTML='';
+}
+document.getElementById('nav').addEventListener('click',function(e){
+  var t=e.target.closest('.tab');if(!t)return;
+  var pg=t.getAttribute('data-pg');if(!pg)return;
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  t.classList.add('on');
+  document.getElementById('pg-'+pg).classList.add('on');
+  ({dev:renderDev,agenda:renderAgenda,verses:renderVerses,notas:renderNotas,metas:renderMetas,diario:renderDiario,gym:renderGym})[pg]();
+});
+var DV=[
+  {ref:"Filipenses 4:13",text:"Todo lo puedo en Cristo que me fortalece."},
+  {ref:"Salmos 23:1",text:"El Señor es mi pastor; nada me faltará."},
+  {ref:"Proverbios 3:5",text:"Fíate de Jehová de todo tu corazón."},
+  {ref:"Jeremías 29:11",text:"Yo sé los planes que tengo para vosotros."},
+  {ref:"Isaías 40:31",text:"Los que esperan en el Señor renovarán sus fuerzas."},
+  {ref:"Hebreos 11:1",text:"La fe es la certeza de lo que se espera."},
+  {ref:"Mateo 6:33",text:"Busca primero el reino de Dios y su justicia."},
+  {ref:"Salmos 46:1",text:"Dios es nuestro amparo y fortaleza."},
+  {ref:"Juan 13:34",text:"Ámense los unos a los otros como yo los he amado."},
+  {ref:"Romanos 12:2",text:"No se amolden al mundo sino transfórmense."},
+  {ref:"Proverbios 31:25",text:"Se reviste de fuerza y dignidad, y afronta segura el porvenir."},
+  {ref:"Deuteronomio 31:6",text:"Sed fuertes y valientes. No temáis ni os aterréis."}
+];
+function gdv(){var d=new Date();return DV[(d.getDate()+d.getMonth())%DV.length];}
+var pCatF='Todas';
+function renderDev(){
+  var v=gdv();
+  document.getElementById('hv').textContent='"'+v.text.slice(0,45)+'..."';
+  if(!S.reflections)S.reflections=[];
+  var refCards=S.reflections.slice().reverse().map(function(r){
+    return'<div class="card" style="border-left:3px solid #e91e8c44;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="color:#ffd700;font-size:10px">✦ '+x(r.date)+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="edit-r btn btns" data-id="'+r.id+'">✏️</button>'
+      +'<button class="del-r btn btns btnd" data-id="'+r.id+'">×</button>'
+      +'</div></div>'
+      +'<div style="font-size:11px;color:#e91e8c;margin-bottom:4px;font-style:italic">"'+x(r.verse)+'"</div>'
+      +'<div style="font-size:13px;white-space:pre-wrap;line-height:1.7;color:#fce4ff">'+x(r.text)+'</div>'
+      +'</div>';
+  }).join('');
+  document.getElementById('pg-dev').innerHTML=
+    '<div style="background:linear-gradient(135deg,#1a0018,#2d0025);border:1px solid #e91e8c33;border-radius:12px;padding:18px;text-align:center;margin-bottom:10px">'
+    +'<div style="color:#ffd700;font-size:10px;letter-spacing:2px;margin-bottom:10px">✦ VERSÍCULO DEL DÍA ✦</div>'
+    +'<div style="font-size:14px;line-height:1.8;color:#ffb3e6;font-style:italic;margin-bottom:8px">"'+x(v.text)+'"</div>'
+    +'<div style="color:#ff6ec7;font-size:12px">— '+x(v.ref)+'</div></div>'
+    +'<div class="card">'
+    +'<div class="muted" style="margin-bottom:8px">✍️ ¿QUÉ TE HABLÓ DIOS HOY?</div>'
+    +'<textarea id="refl-ta" class="inp" rows="4" placeholder="Escribe tu reflexión de hoy..." style="resize:none;line-height:1.7"></textarea>'
+    +'<div style="margin-top:8px">'
+    +'<button id="refl-btn" class="btn btnp btns">💾 Guardar reflexión</button>'
+    +'</div></div>'
+    +(refCards?'<div class="muted" style="margin-bottom:8px;padding-left:2px">📖 MIS REFLEXIONES</div>'+refCards:'')
+    +'<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<div class="muted">🙏 PETICIONES DE ORACIÓN</div>'
+    +'<button id="btn-new-p" class="btn btnp btns">+ Nueva</button></div>'
+    +'<div id="pcats-f" style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px"></div>'
+    +'<div id="prayer-list"></div></div>';
+  document.getElementById('refl-btn').onclick=function(){
+    var t=document.getElementById('refl-ta').value.trim();if(!t)return;
+    S.reflections.push({id:uid(),date:new Date().toLocaleString('es-ES'),verse:v.ref+' — '+v.text,text:t});
+    sv('reflections');renderDev();
+  };
+  document.getElementById('btn-new-p').onclick=function(){openPrayerModal(null);};
+  document.querySelectorAll('.del-r').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar reflexión?'))return;
+    S.reflections=S.reflections.filter(function(r){return r.id!==Number(b.getAttribute('data-id'));});
+    sv('reflections');renderDev();
+  };});
+  document.querySelectorAll('.edit-r').forEach(function(b){b.onclick=function(){
+    var id=Number(b.getAttribute('data-id'));
+    var r=S.reflections.find(function(rr){return rr.id===id;});if(!r)return;
+    showModal('<h3>✍️ Editar reflexión</h3>'
+      +'<div style="font-size:11px;color:#e91e8c;margin-bottom:8px;font-style:italic">"'+x(r.verse)+'"</div>'
+      +'<textarea id="m-refl" class="inp" rows="5" style="resize:none;margin-bottom:12px">'+x(r.text)+'</textarea>'
+      +'<div class="row"><button id="m-rsave" class="btn btnp">Guardar</button><button id="m-rcancel" class="btn">Cancelar</button></div>');
+    document.getElementById('m-rsave').onclick=function(){
+      var t=document.getElementById('m-refl').value.trim();if(!t)return;
+      S.reflections=S.reflections.map(function(rr){return rr.id===id?Object.assign({},rr,{text:t}):rr;});
+      sv('reflections');closeModal();renderDev();
+    };
+    document.getElementById('m-rcancel').onclick=closeModal;
+  };});
+  renderPrayers();
+}
+function renderPrayers(){
+  var pf=document.getElementById('pcats-f');if(!pf)return;
+  pf.innerHTML='';
+  ['Todas'].concat(S.pcats).forEach(function(c){
+    var b=document.createElement('button');
+    b.className='btn btns';b.textContent=c;
+    b.style.background=pCatF===c?'#e91e8c':'#1a0018';
+    b.style.color=pCatF===c?'#fff':'#a06090';
+    b.onclick=function(){pCatF=c;renderPrayers();};
+    pf.appendChild(b);
+  });
+  var list=document.getElementById('prayer-list');if(!list)return;
+  var items=pCatF==='Todas'?S.prayers:S.prayers.filter(function(p){return p.cat===pCatF;});
+  if(!items.length){list.innerHTML='<div class="muted" style="text-align:center;padding:14px">Sin peticiones aún 🙏</div>';return;}
+  list.innerHTML='';
+  items.forEach(function(p){
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;margin-bottom:6px;background:'+(p.done?'#0a150a':'#0d0008')+';border:1px solid '+(p.done?'#1e3a1e':'#3d0035');
+    d.innerHTML='<button class="tog-p" data-id="'+p.id+'" style="flex-shrink:0;background:none;border:2px solid '+(p.done?'#ffd700':'#e91e8c')+';border-radius:50%;width:22px;height:22px;cursor:pointer;color:'+(p.done?'#ffd700':'transparent')+';font-size:11px">'+(p.done?'✓':'')+'</button>'
+      +'<div style="flex:1"><div style="font-size:13px;text-decoration:'+(p.done?'line-through':'none')+';color:'+(p.done?'#a06090':'#fce4ff')+'">'+x(p.text)+'</div>'
+      +'<div style="font-size:10px;color:#e91e8c">'+x(p.cat)+' · '+x(p.date)+'</div></div>'
+      +'<button class="edit-p" data-id="'+p.id+'" style="background:none;border:none;color:#a06090;cursor:pointer;font-size:14px">✏️</button>'
+      +'<button class="del-p" data-id="'+p.id+'" style="background:none;border:none;color:#c00;cursor:pointer;font-size:18px">×</button>';
+    list.appendChild(d);
+  });
+  list.querySelectorAll('.tog-p').forEach(function(b){b.onclick=function(){
+    var id=Number(b.getAttribute('data-id'));
+    S.prayers=S.prayers.map(function(p){return p.id===id?Object.assign({},p,{done:!p.done}):p;});
+    sv('prayers');renderPrayers();
+  };});
+  list.querySelectorAll('.edit-p').forEach(function(b){b.onclick=function(){openPrayerModal(Number(b.getAttribute('data-id')));};});
+  list.querySelectorAll('.del-p').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    S.prayers=S.prayers.filter(function(p){return p.id!==Number(b.getAttribute('data-id'));});
+    sv('prayers');renderPrayers();
+  };});
+}
+function openPrayerModal(id){
+  var p=id?S.prayers.find(function(xx){return xx.id===id;}):null;
+  var opts=S.pcats.map(function(c){return'<option'+(p&&p.cat===c?' selected':'')+'>'+x(c)+'</option>';}).join('');
+  showModal('<h3>'+(p?'Editar':'Nueva')+' petición</h3>'
+    +'<input id="m-pt" class="inp" value="'+x(p?p.text:'')+'" placeholder="Petición..." style="margin-bottom:8px"/>'
+    +'<select id="m-pc" class="inp" style="margin-bottom:12px">'+opts+'</select>'
+    +'<div class="row"><button id="m-psave" class="btn btnp">Guardar</button>'
+    +'<button id="m-pcancel" class="btn">Cancelar</button>'
+    +'<button id="m-pcats" class="btn btns">⚙️ Cats</button></div>');
+  document.getElementById('m-psave').onclick=function(){
+    var t=document.getElementById('m-pt').value.trim();if(!t)return;
+    var c=document.getElementById('m-pc').value;
+    if(p){S.prayers=S.prayers.map(function(pp){return pp.id===id?Object.assign({},pp,{text:t,cat:c}):pp;});}
+    else{S.prayers.unshift({id:uid(),text:t,cat:c,done:false,date:tod()});}
+    sv('prayers');closeModal();renderPrayers();
+  };
+  document.getElementById('m-pcancel').onclick=closeModal;
+  document.getElementById('m-pcats').onclick=function(){closeModal();openCatModal('pcats','Categorías de oración',function(){openPrayerModal(null);});};
+}
+var selDay=new Date().getDay();
+var DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function renderAgenda(){
+  var pg=document.getElementById('pg-agenda');
+  var db=DIAS.map(function(d,i){
+    var has=S.events.some(function(e){return e.day===i;});
+    return'<button class="btn day-btn" data-d="'+i+'" style="flex:1;padding:8px 2px;font-size:12px;position:relative;background:'+(selDay===i?'#e91e8c':'#1a0018')+';color:'+(selDay===i?'#fff':'#a06090')+';border-color:'+(selDay===i?'#e91e8c':'#3d0035')+'">'+d+(has?'<span style="position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#ffd700;display:block"></span>':'')+'</button>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;gap:4px;margin-bottom:10px">'+db+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div class="muted">📅 '+DIAS[selDay]+'</div>'
+    +'<div class="row"><button id="btn-new-ev" class="btn btnp btns">+ Evento</button>'
+    +'<button id="btn-mat-mgr" class="btn btns">⚙️ Materias</button></div></div>'
+    +'<div id="ev-list"></div>';
+  pg.querySelectorAll('.day-btn').forEach(function(b){b.onclick=function(){selDay=Number(b.getAttribute('data-d'));renderAgenda();};});
+  document.getElementById('btn-new-ev').onclick=function(){openEvModal(null);};
+  document.getElementById('btn-mat-mgr').onclick=openMatModal;
+  renderEvents();
+}
+function renderEvents(){
+  var list=document.getElementById('ev-list');if(!list)return;
+  var evs=S.events.filter(function(e){return e.day===selDay;}).sort(function(a,b){return(a.hora||'').localeCompare(b.hora||'');});
+  if(!evs.length){list.innerHTML='<div class="card" style="text-align:center;color:#a06090">Día libre 🌸</div>';return;}
+  list.innerHTML='';
+  evs.forEach(function(ev){
+    var mat=S.materias.find(function(m){return m.name===ev.mat;})||{color:'#a06090'};
+    var d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:8px;padding:11px;border-radius:10px;margin-bottom:8px;background:#0d0008;border:1px solid '+mat.color+'44;border-left:3px solid '+mat.color+';opacity:'+(ev.done?0.5:1);
+    d.innerHTML='<button class="tog-e" data-id="'+ev.id+'" style="flex-shrink:0;background:none;border:2px solid '+(ev.done?'#ffd700':mat.color)+';border-radius:50%;width:22px;height:22px;cursor:pointer;color:'+(ev.done?'#ffd700':'transparent')+';font-size:11px">'+(ev.done?'✓':'')+'</button>'
+      +'<div style="flex:1"><div style="font-size:13px;text-decoration:'+(ev.done?'line-through':'none')+'">'+x(ev.title)+'</div>'
+      +'<div style="font-size:10px;color:'+mat.color+'">'+x(ev.mat)+(ev.hora?' · '+x(ev.hora):'')+'</div></div>'
+      +'<button class="edit-e" data-id="'+ev.id+'" style="background:none;border:none;color:#a06090;cursor:pointer;font-size:14px">✏️</button>'
+      +'<button class="del-e" data-id="'+ev.id+'" style="background:none;border:none;color:#c00;cursor:pointer;font-size:18px">×</button>';
+    list.appendChild(d);
+  });
+  list.querySelectorAll('.tog-e').forEach(function(b){b.onclick=function(){
+    var id=Number(b.getAttribute('data-id'));
+    S.events=S.events.map(function(e){return e.id===id?Object.assign({},e,{done:!e.done}):e;});
+    sv('events');renderEvents();
+  };});
+  list.querySelectorAll('.edit-e').forEach(function(b){b.onclick=function(){openEvModal(Number(b.getAttribute('data-id')));};});
+  list.querySelectorAll('.del-e').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    S.events=S.events.filter(function(e){return e.id!==Number(b.getAttribute('data-id'));});
+    sv('events');renderAgenda();
+  };});
+}
+function openEvModal(id){
+  var ev=id?S.events.find(function(e){return e.id===id;}):null;
+  var mo=S.materias.map(function(m){return'<option'+(ev&&ev.mat===m.name?' selected':'')+'>'+x(m.name)+'</option>';}).join('');
+  showModal('<h3>'+(ev?'Editar evento':'Nuevo evento — '+DIAS[selDay])+'</h3>'
+    +'<input id="m-et" class="inp" value="'+x(ev?ev.title:'')+'" placeholder="Descripción..." style="margin-bottom:8px"/>'
+    +'<input id="m-eh" class="inp" value="'+x(ev?ev.hora:'')+'" placeholder="Hora (08:00)" style="margin-bottom:8px"/>'
+    +'<select id="m-em" class="inp" style="margin-bottom:12px">'+mo+'</select>'
+    +'<div class="row"><button id="m-esave" class="btn btnp">Guardar</button><button id="m-ecancel" class="btn">Cancelar</button></div>');
+  document.getElementById('m-esave').onclick=function(){
+    var t=document.getElementById('m-et').value.trim();if(!t)return;
+    var h=document.getElementById('m-eh').value.trim();
+    var m=document.getElementById('m-em').value;
+    if(ev){S.events=S.events.map(function(e){return e.id===id?Object.assign({},e,{title:t,hora:h,mat:m}):e;});}
+    else{S.events.push({id:uid(),day:selDay,title:t,mat:m,hora:h,done:false});}
+    sv('events');closeModal();renderAgenda();
+  };
+  document.getElementById('m-ecancel').onclick=closeModal;
+}
+function openMatModal(){
+  var rows=S.materias.map(function(m,i){
+    return'<div class="row" style="margin-bottom:6px">'
+      +'<input class="inp mat-name" data-i="'+i+'" value="'+x(m.name)+'" style="flex:1"/>'
+      +'<input type="color" class="mat-color" data-i="'+i+'" value="'+m.color+'" style="width:32px;height:32px;border:none;background:none;cursor:pointer"/>'
+      +'<button class="btn btnd btns del-mat" data-i="'+i+'">×</button></div>';
+  }).join('');
+  showModal('<h3>⚙️ Materias</h3>'+rows
+    +'<div class="row" style="margin-top:10px">'
+    +'<button id="m-matadd" class="btn btnp btns">+ Añadir</button>'
+    +'<button id="m-matsave" class="btn btns">💾 Guardar</button>'
+    +'<button id="m-matcancel" class="btn btns">Cerrar</button></div>');
+  document.getElementById('m-matadd').onclick=function(){S.materias.push({name:'Nueva materia',color:'#a06090'});openMatModal();};
+  document.getElementById('m-matsave').onclick=function(){
+    document.querySelectorAll('.mat-name').forEach(function(inp){var i=Number(inp.getAttribute('data-i'));S.materias[i].name=inp.value.trim()||S.materias[i].name;});
+    document.querySelectorAll('.mat-color').forEach(function(inp){var i=Number(inp.getAttribute('data-i'));S.materias[i].color=inp.value;});
+    sv('materias');closeModal();renderAgenda();
+  };
+  document.querySelectorAll('.del-mat').forEach(function(b){b.onclick=function(){S.materias.splice(Number(b.getAttribute('data-i')),1);openMatModal();};});
+  document.getElementById('m-matcancel').onclick=closeModal;
+}
+var vCatF='Todas';
+function renderVerses(){
+  var pg=document.getElementById('pg-verses');
+  var cb=['Todas'].concat(S.vcats).map(function(c){
+    return'<button class="btn btns vcat-btn" data-c="'+x(c)+'" style="background:'+(vCatF===c?'#e91e8c':'#1a0018')+';color:'+(vCatF===c?'#fff':'#a06090')+';margin-bottom:4px">'+x(c)+'</button>';
+  }).join('');
+  var items=vCatF==='Todas'?S.verses:S.verses.filter(function(v){return v.cat===vCatF;});
+  var cards=items.map(function(v,i){
+    return'<div class="card" style="border-left:3px solid #e91e8c">'
+      +'<div style="font-size:13px;line-height:1.7;font-style:italic;color:#ffb3e6;margin-bottom:6px">"'+x(v.text)+'"</div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<div><span style="color:#ff6ec7;font-size:12px">'+x(v.ref)+'</span> <span class="muted">· '+x(v.cat)+'</span></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="edit-v btn btns" data-i="'+i+'">✏️</button>'
+      +'<button class="del-v btn btns btnd" data-i="'+i+'">×</button>'
+      +'</div></div></div>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<div class="muted">📖 MIS VERSÍCULOS</div>'
+    +'<div class="row"><button id="btn-new-v" class="btn btnp btns">+ Añadir</button>'
+    +'<button id="btn-vcats" class="btn btns">⚙️ Cats</button></div></div>'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+cb+'</div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Sin versículos aún.</div>');
+  pg.querySelectorAll('.vcat-btn').forEach(function(b){b.onclick=function(){vCatF=b.getAttribute('data-c');renderVerses();};});
+  document.getElementById('btn-new-v').onclick=function(){openVerseModal(null);};
+  document.getElementById('btn-vcats').onclick=function(){openCatModal('vcats','Categorías de versículos',renderVerses);};
+  pg.querySelectorAll('.edit-v').forEach(function(b){b.onclick=function(){openVerseModal(Number(b.getAttribute('data-i')));};});
+  pg.querySelectorAll('.del-v').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    S.verses.splice(Number(b.getAttribute('data-i')),1);sv('verses');renderVerses();
+  };});
+}
+function openVerseModal(idx){
+  var v=(idx!==null&&idx!==undefined)?S.verses[idx]:null;
+  var opts=S.vcats.map(function(c){return'<option'+(v&&v.cat===c?' selected':'')+'>'+x(c)+'</option>';}).join('');
+  showModal('<h3>'+(v?'Editar versículo':'Nuevo versículo')+'</h3>'
+    +'<input id="m-vr" class="inp" value="'+x(v?v.ref:'')+'" placeholder="Referencia (Ej: Juan 3:16)" style="margin-bottom:8px"/>'
+    +'<textarea id="m-vt" class="inp" rows="3" placeholder="Texto del versículo..." style="margin-bottom:8px;resize:none">'+x(v?v.text:'')+'</textarea>'
+    +'<select id="m-vc" class="inp" style="margin-bottom:12px">'+opts+'</select>'
+    +'<div class="row"><button id="m-vsave" class="btn btnp">Guardar</button><button id="m-vcancel" class="btn">Cancelar</button></div>');
+  document.getElementById('m-vsave').onclick=function(){
+    var r=document.getElementById('m-vr').value.trim();
+    var t=document.getElementById('m-vt').value.trim();
+    var c=document.getElementById('m-vc').value;
+    if(!r||!t)return;
+    if(v){S.verses[idx]={ref:r,text:t,cat:c};}else{S.verses.push({ref:r,text:t,cat:c});}
+    sv('verses');closeModal();renderVerses();
+  };
+  document.getElementById('m-vcancel').onclick=closeModal;
+}
+var nCatF='Todas';
+function renderNotas(){
+  var pg=document.getElementById('pg-notas');
+  var cb=['Todas'].concat(S.ncats).map(function(c){
+    return'<button class="btn btns ncat-btn" data-c="'+x(c)+'" style="background:'+(nCatF===c?'#e91e8c':'#1a0018')+';color:'+(nCatF===c?'#fff':'#a06090')+';margin-bottom:4px">'+x(c)+'</button>';
+  }).join('');
+  var items=nCatF==='Todas'?S.notas:S.notas.filter(function(n){return n.cat===nCatF;});
+  var cards=items.map(function(n){
+    return'<div class="card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="font-weight:700;color:#ff6ec7">'+x(n.title)+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="edit-n btn btns" data-id="'+n.id+'">✏️</button>'
+      +'<button class="del-n btn btns btnd" data-id="'+n.id+'">×</button></div></div>'
+      +'<div style="font-size:11px;color:#a06090;margin-bottom:6px">'+x(n.cat)+'</div>'
+      +'<div style="font-size:12px;white-space:pre-wrap;line-height:1.6">'+x(n.body)+'</div></div>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<div class="muted">📝 MIS NOTAS</div>'
+    +'<div class="row"><button id="btn-new-n" class="btn btnp btns">+ Nueva</button>'
+    +'<button id="btn-ncats" class="btn btns">⚙️ Cats</button></div></div>'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+cb+'</div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Sin notas aún.</div>');
+  pg.querySelectorAll('.ncat-btn').forEach(function(b){b.onclick=function(){nCatF=b.getAttribute('data-c');renderNotas();};});
+  document.getElementById('btn-new-n').onclick=function(){openNotaModal(null);};
+  document.getElementById('btn-ncats').onclick=function(){openCatModal('ncats','Categorías de notas',renderNotas);};
+  pg.querySelectorAll('.edit-n').forEach(function(b){b.onclick=function(){openNotaModal(Number(b.getAttribute('data-id')));};});
+  pg.querySelectorAll('.del-n').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    S.notas=S.notas.filter(function(n){return n.id!==Number(b.getAttribute('data-id'));});
+    sv('notas');renderNotas();
+  };});
+}
+function openNotaModal(id){
+  var n=id?S.notas.find(function(xx){return xx.id===id;}):null;
+  var opts=S.ncats.map(function(c){return'<option'+(n&&n.cat===c?' selected':'')+'>'+x(c)+'</option>';}).join('');
+  showModal('<h3>'+(n?'Editar nota':'Nueva nota')+'</h3>'
+    +'<input id="m-nt" class="inp" value="'+x(n?n.title:'')+'" placeholder="Título..." style="margin-bottom:8px"/>'
+    +'<select id="m-nc" class="inp" style="margin-bottom:8px">'+opts+'</select>'
+    +'<textarea id="m-nb" class="inp" rows="5" placeholder="Contenido..." style="margin-bottom:12px;resize:none">'+x(n?n.body:'')+'</textarea>'
+    +'<div class="row"><button id="m-nsave" class="btn btnp">Guardar</button><button id="m-ncancel" class="btn">Cancelar</button></div>');
+  document.getElementById('m-nsave').onclick=function(){
+    var t=document.getElementById('m-nt').value.trim();if(!t)return;
+    var c=document.getElementById('m-nc').value;
+    var b=document.getElementById('m-nb').value;
+    if(n){S.notas=S.notas.map(function(nn){return nn.id===id?Object.assign({},nn,{title:t,cat:c,body:b}):nn;});}
+    else{S.notas.unshift({id:uid(),title:t,cat:c,body:b});}
+    sv('notas');closeModal();renderNotas();
+  };
+  document.getElementById('m-ncancel').onclick=closeModal;
+}
+var mCatF='Todas';
+function renderMetas(){
+  var pg=document.getElementById('pg-metas');
+  var cb=['Todas'].concat(S.mcats).map(function(c){
+    return'<button class="btn btns mcat-btn" data-c="'+x(c)+'" style="background:'+(mCatF===c?'#e91e8c':'#1a0018')+';color:'+(mCatF===c?'#fff':'#a06090')+';margin-bottom:4px">'+x(c)+'</button>';
+  }).join('');
+  var items=mCatF==='Todas'?S.metas:S.metas.filter(function(m){return m.cat===mCatF;});
+  var cards=items.map(function(m){
+    var pct=m.total>0?Math.min(100,Math.round((m.prog/m.total)*100)):0;
+    return'<div class="card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      +'<div style="font-size:13px;color:#fce4ff">'+x(m.title)+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="prog-m btn btns" data-id="'+m.id+'">+1</button>'
+      +'<button class="edit-m btn btns" data-id="'+m.id+'">✏️</button>'
+      +'<button class="del-m btn btns btnd" data-id="'+m.id+'">×</button></div></div>'
+      +'<div class="muted" style="margin-bottom:4px">'+x(m.cat)+' · '+m.prog+' / '+m.total+' '+x(m.unit)+' ('+pct+'%)</div>'
+      +'<div class="pbar"><div class="pfill" style="width:'+pct+'%"></div></div></div>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+    +'<div class="muted">🎯 MIS METAS</div>'
+    +'<div class="row"><button id="btn-new-m" class="btn btnp btns">+ Nueva</button>'
+    +'<button id="btn-mcats" class="btn btns">⚙️ Cats</button></div></div>'
+    +'<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">'+cb+'</div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Sin metas aún 🎯</div>');
+  pg.querySelectorAll('.mcat-btn').forEach(function(b){b.onclick=function(){mCatF=b.getAttribute('data-c');renderMetas();};});
+  document.getElementById('btn-new-m').onclick=function(){openMetaModal(null);};
+  document.getElementById('btn-mcats').onclick=function(){openCatModal('mcats','Categorías de metas',renderMetas);};
+  pg.querySelectorAll('.prog-m').forEach(function(b){b.onclick=function(){
+    var id=Number(b.getAttribute('data-id'));
+    S.metas=S.metas.map(function(m){return m.id===id?Object.assign({},m,{prog:Math.min(m.total,m.prog+1)}):m;});
+    sv('metas');renderMetas();
+  };});
+  pg.querySelectorAll('.edit-m').forEach(function(b){b.onclick=function(){openMetaModal(Number(b.getAttribute('data-id')));};});
+  pg.querySelectorAll('.del-m').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar?'))return;
+    S.metas=S.metas.filter(function(m){return m.id!==Number(b.getAttribute('data-id'));});
+    sv('metas');renderMetas();
+  };});
+}
+function openMetaModal(id){
+  var m=id?S.metas.find(function(xx){return xx.id===id;}):null;
+  var opts=S.mcats.map(function(c){return'<option'+(m&&m.cat===c?' selected':'')+'>'+x(c)+'</option>';}).join('');
+  showModal('<h3>'+(m?'Editar meta':'Nueva meta')+'</h3>'
+    +'<input id="m-mtit" class="inp" value="'+x(m?m.title:'')+'" placeholder="Título..." style="margin-bottom:8px"/>'
+    +'<select id="m-mcat" class="inp" style="margin-bottom:8px">'+opts+'</select>'
+    +'<div class="row" style="margin-bottom:8px">'
+    +'<input id="m-mprog" class="inp" type="number" min="0" value="'+(m?m.prog:0)+'" style="flex:1"/>'
+    +'<input id="m-mtot" class="inp" type="number" min="1" value="'+(m?m.total:10)+'" style="flex:1"/></div>'
+    +'<input id="m-munit" class="inp" value="'+x(m?m.unit:'')+'" placeholder="Unidad (ej: capítulos)" style="margin-bottom:12px"/>'
+    +'<div class="row"><button id="m-msave" class="btn btnp">Guardar</button><button id="m-mcancel" class="btn">Cancelar</button></div>');
+  document.getElementById('m-msave').onclick=function(){
+    var t=document.getElementById('m-mtit').value.trim();if(!t)return;
+    var c=document.getElementById('m-mcat').value;
+    var pr=parseInt(document.getElementById('m-mprog').value)||0;
+    var to=parseInt(document.getElementById('m-mtot').value)||1;
+    var u=document.getElementById('m-munit').value.trim()||'unidades';
+    if(m){S.metas=S.metas.map(function(mm){return mm.id===id?Object.assign({},mm,{title:t,cat:c,prog:pr,total:to,unit:u}):mm;});}
+    else{S.metas.push({id:uid(),title:t,cat:c,prog:pr,total:to,unit:u});}
+    sv('metas');closeModal();renderMetas();
+  };
+  document.getElementById('m-mcancel').onclick=closeModal;
+}
+var diaryUnlocked=false;
+var DIARY_PASS='Teamo';
+function renderDiario(){
+  var pg=document.getElementById('pg-diario');
+  if(!S.diary)S.diary=[];
+  if(!diaryUnlocked){
+    pg.innerHTML='<div class="card" style="text-align:center;padding:30px 20px">'
+      +'<div style="font-size:32px;margin-bottom:12px">🔒</div>'
+      +'<div style="color:#ff6ec7;font-size:14px;margin-bottom:6px;font-weight:700">Diario privado de PrincessLia</div>'
+      +'<div class="muted" style="margin-bottom:16px">Este espacio es solo tuyo 🌸</div>'
+      +'<input id="pass-inp" class="inp" type="password" placeholder="Contraseña..." style="margin-bottom:10px;text-align:center"/>'
+      +'<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'
+      +'<button id="pass-enter" class="btn btnp">Entrar</button>'
+      +'<button id="pass-change" class="btn btns">🔑 Cambiar contraseña</button>'
+      +'</div>'
+      +'<div id="pass-err" style="color:#f76f6f;font-size:11px;margin-top:8px;display:none">Contraseña incorrecta 💔</div>'
+      +'</div>';
+    document.getElementById('pass-enter').onclick=checkPass;
+    document.getElementById('pass-inp').onkeydown=function(e){if(e.key==='Enter')checkPass();};
+    document.getElementById('pass-change').onclick=openChangePass;
+    return;
+  }
+  var cards=S.diary.slice().reverse().map(function(e){
+    return'<div class="card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">'
+      +'<div style="color:#ff6ec7;font-size:12px">🔒 '+x(e.date)+'</div>'
+      +'<button class="del-d btn btns btnd" data-id="'+e.id+'">×</button></div>'
+      +'<div style="font-size:13px;white-space:pre-wrap;line-height:1.7">'+x(e.text)+'</div></div>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div style="color:#ff6ec7;font-size:13px;font-weight:700">🌸 Mi diario personal</div>'
+    +'<div class="row">'
+    +'<button id="diary-lock" class="btn btns">🔒 Cerrar</button>'
+    +'<button id="diary-chpass" class="btn btns">🔑 Cambiar clave</button>'
+    +'</div></div>'
+    +'<div class="card">'
+    +'<div class="muted" style="margin-bottom:8px">+ Nueva entrada</div>'
+    +'<textarea id="diary-ta" class="inp" rows="5" placeholder="Escribe tus pensamientos..." style="resize:none;line-height:1.7"></textarea>'
+    +'<div style="margin-top:8px"><button id="diary-save" class="btn btnp btns">💾 Guardar entrada</button></div></div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Aún no hay entradas 🌸</div>');
+  document.getElementById('diary-save').onclick=function(){
+    var t=document.getElementById('diary-ta').value.trim();if(!t)return;
+    S.diary.push({id:uid(),date:new Date().toLocaleString('es-ES'),text:t});
+    sv('diary');renderDiario();
+  };
+  document.getElementById('diary-lock').onclick=function(){diaryUnlocked=false;renderDiario();};
+  document.getElementById('diary-chpass').onclick=openChangePass;
+  pg.querySelectorAll('.del-d').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar entrada?'))return;
+    S.diary=S.diary.filter(function(e){return e.id!==Number(b.getAttribute('data-id'));});
+    sv('diary');renderDiario();
+  };});
+}
+function checkPass(){
+  var inp=document.getElementById('pass-inp');
+  var err=document.getElementById('pass-err');
+  var stored=localStorage.getItem('lia_diarypass')||DIARY_PASS;
+  if(inp.value===stored){diaryUnlocked=true;renderDiario();}
+  else{err.style.display='block';inp.value='';setTimeout(function(){err.style.display='none';},2000);}
+}
+function openChangePass(){
+  showModal('<h3>🔑 Cambiar contraseña del diario</h3>'
+    +'<input id="cp-old" class="inp" type="password" placeholder="Contraseña actual..." style="margin-bottom:8px"/>'
+    +'<input id="cp-new" class="inp" type="password" placeholder="Nueva contraseña..." style="margin-bottom:8px"/>'
+    +'<input id="cp-rep" class="inp" type="password" placeholder="Repetir nueva contraseña..." style="margin-bottom:12px"/>'
+    +'<div id="cp-err" style="color:#f76f6f;font-size:11px;margin-bottom:8px;display:none"></div>'
+    +'<div class="row"><button id="cp-save" class="btn btnp">Guardar</button><button id="cp-cancel" class="btn">Cancelar</button></div>');
+  document.getElementById('cp-save').onclick=function(){
+    var old=document.getElementById('cp-old').value;
+    var nw=document.getElementById('cp-new').value.trim();
+    var rp=document.getElementById('cp-rep').value.trim();
+    var err=document.getElementById('cp-err');
+    var stored=localStorage.getItem('lia_diarypass')||DIARY_PASS;
+    if(old!==stored){err.textContent='Contraseña actual incorrecta 💔';err.style.display='block';return;}
+    if(!nw){err.textContent='La nueva contraseña no puede estar vacía.';err.style.display='block';return;}
+    if(nw!==rp){err.textContent='Las contraseñas no coinciden 💔';err.style.display='block';return;}
+    localStorage.setItem('lia_diarypass',nw);
+    closeModal();alert('✓ Contraseña cambiada con éxito 🌸');
+  };
+  document.getElementById('cp-cancel').onclick=closeModal;
+}
+function openCatModal(key,title,onDone){
+  var rows=S[key].map(function(c,i){
+    return'<div class="row" style="margin-bottom:6px">'
+      +'<input class="inp cat-inp" data-i="'+i+'" value="'+x(c)+'" style="flex:1"/>'
+      +'<button class="btn btnd btns del-cat" data-i="'+i+'">×</button></div>';
+  }).join('');
+  showModal('<h3>⚙️ '+x(title)+'</h3>'+rows
+    +'<div class="row" style="margin-top:10px">'
+    +'<button id="m-catadd" class="btn btnp btns">+ Añadir</button>'
+    +'<button id="m-catsave" class="btn btns">💾 Guardar</button>'
+    +'<button id="m-catcancel" class="btn btns">Cerrar</button></div>');
+  document.getElementById('m-catadd').onclick=function(){S[key].push('Nueva');openCatModal(key,title,onDone);};
+  document.getElementById('m-catsave').onclick=function(){
+    var nc=[];
+    document.querySelectorAll('.cat-inp').forEach(function(inp){var v=inp.value.trim();if(v)nc.push(v);});
+    S[key]=nc;sv(key);closeModal();if(onDone)onDone();
+  };
+  document.querySelectorAll('.del-cat').forEach(function(b){b.onclick=function(){S[key].splice(Number(b.getAttribute('data-i')),1);openCatModal(key,title,onDone);};});
+  document.getElementById('m-catcancel').onclick=closeModal;
+}
+var gymTab='rutinas';
+function renderGym(){
+  var pg=document.getElementById('pg-gym');
+  var tabs=['rutinas','progreso','plan','logros'].map(function(t){
+    var labels={rutinas:'💪 Rutinas',progreso:'📊 Progreso',plan:'📅 Plan',logros:'🏆 Logros'};
+    return'<button class="btn btns gym-tab-btn" data-t="'+t+'" style="background:'+(gymTab===t?'#e91e8c':'#1a0018')+';color:'+(gymTab===t?'#fff':'#a06090')+'">'+labels[t]+'</button>';
+  }).join('');
+  pg.innerHTML='<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px">'+tabs+'</div><div id="gym-body"></div>';
+  pg.querySelectorAll('.gym-tab-btn').forEach(function(b){
+    b.onclick=function(){gymTab=b.getAttribute('data-t');renderGym();};
+  });
+  if(gymTab==='rutinas')renderRutinas();
+  else if(gymTab==='progreso')renderProgreso();
+  else if(gymTab==='plan')renderPlan();
+  else renderLogros();
+}
+function renderRutinas(){
+  var body=document.getElementById('gym-body');
+  var cards=(S.rutinas||[]).map(function(r,i){
+    var exs=r.ejercicios.map(function(e){
+      return'<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #3d003533">'
+        +'<div style="font-size:12px;color:#fce4ff">'+x(e.name)+'</div>'
+        +'<div style="font-size:11px;color:#a06090">'+e.series+'x'+e.reps+(e.peso?' · '+e.peso+'kg':'')+'</div>'
+        +'</div>';
+    }).join('');
+    return'<div class="card" style="border-left:3px solid #e91e8c">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">'
+      +'<div style="font-weight:700;color:#ff6ec7">'+x(r.name)+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="edit-rut btn btns" data-i="'+i+'">✏️</button>'
+      +'<button class="del-rut btn btns btnd" data-i="'+i+'">×</button>'
+      +'</div></div>'
+      +'<div style="font-size:11px;color:#a06090;margin-bottom:6px">'+x(r.cat||'General')+'</div>'
+      +exs+'</div>';
+  }).join('');
+  body.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div class="muted">💪 MIS RUTINAS</div>'
+    +'<button id="btn-new-rut" class="btn btnp btns">+ Nueva rutina</button></div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Sin rutinas aún 💪</div>');
+  document.getElementById('btn-new-rut').onclick=function(){openRutinaModal(null);};
+  body.querySelectorAll('.edit-rut').forEach(function(b){b.onclick=function(){openRutinaModal(Number(b.getAttribute('data-i')));};});
+  body.querySelectorAll('.del-rut').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar rutina?'))return;
+    S.rutinas.splice(Number(b.getAttribute('data-i')),1);sv('rutinas');renderRutinas();
+  };});
+}
+function openRutinaModal(idx){
+  var r=idx!==null?S.rutinas[idx]:null;
+  var cats=['Piernas','Brazos','Pecho','Espalda','Abdomen','Cardio','Full Body','Glúteos'];
+  var catOpts=cats.map(function(c){return'<option'+(r&&r.cat===c?' selected':'')+'>'+c+'</option>';}).join('');
+  var exRows=(r?r.ejercicios:[]).map(function(e,i){return exRow(e,i);}).join('');
+  showModal('<h3>'+(r?'Editar rutina':'Nueva rutina')+'</h3>'
+    +'<input id="m-rname" class="inp" value="'+x(r?r.name:'')+'" placeholder="Nombre de la rutina..." style="margin-bottom:8px"/>'
+    +'<select id="m-rcat" class="inp" style="margin-bottom:10px">'+catOpts+'</select>'
+    +'<div class="muted" style="margin-bottom:6px">Ejercicios:</div>'
+    +'<div id="ex-rows">'+exRows+'</div>'
+    +'<button id="add-ex" class="btn btns" style="margin-bottom:12px;margin-top:4px">+ Ejercicio</button>'
+    +'<div class="row"><button id="m-rsave" class="btn btnp">Guardar</button><button id="m-rcancel" class="btn">Cancelar</button></div>');
+  document.getElementById('add-ex').onclick=function(){
+    var cont=document.getElementById('ex-rows');
+    var i=cont.children.length;
+    cont.insertAdjacentHTML('beforeend',exRow({name:'',series:3,reps:10,peso:''},i));
+  };
+  document.getElementById('m-rsave').onclick=function(){
+    var name=document.getElementById('m-rname').value.trim();if(!name)return;
+    var cat=document.getElementById('m-rcat').value;
+    var ejercicios=[];
+    document.querySelectorAll('.ex-row').forEach(function(row){
+      var n=row.querySelector('.ex-name').value.trim();if(!n)return;
+      ejercicios.push({
+        name:n,
+        series:parseInt(row.querySelector('.ex-ser').value)||3,
+        reps:parseInt(row.querySelector('.ex-rep').value)||10,
+        peso:row.querySelector('.ex-peso').value.trim()
+      });
+    });
+    if(!S.rutinas)S.rutinas=[];
+    if(r){S.rutinas[idx]={name:name,cat:cat,ejercicios:ejercicios};}
+    else{S.rutinas.push({id:uid(),name:name,cat:cat,ejercicios:ejercicios});}
+    sv('rutinas');closeModal();renderRutinas();
+  };
+  document.getElementById('m-rcancel').onclick=closeModal;
+}
+function exRow(e,i){
+  return'<div class="ex-row" style="background:#080005;border-radius:8px;padding:8px;margin-bottom:6px">'
+    +'<input class="inp ex-name" value="'+x(e.name)+'" placeholder="Ejercicio..." style="margin-bottom:4px"/>'
+    +'<div class="row">'
+    +'<input class="inp ex-ser" type="number" min="1" value="'+(e.series||3)+'" placeholder="Series" style="flex:1"/>'
+    +'<input class="inp ex-rep" type="number" min="1" value="'+(e.reps||10)+'" placeholder="Reps" style="flex:1"/>'
+    +'<input class="inp ex-peso" value="'+(e.peso||'')+'" placeholder="kg" style="flex:1"/>'
+    +'</div></div>';
+}
+function renderProgreso(){
+  var body=document.getElementById('gym-body');
+  if(!S.medidas)S.medidas=[];
+  var rows=S.medidas.slice().reverse().map(function(m){
+    return'<div class="card" style="padding:10px 14px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<div style="font-size:11px;color:#ffd700">📅 '+x(m.date)+'</div>'
+      +'<button class="del-med btn btns btnd" data-id="'+m.id+'">×</button></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:8px">'
+      +(m.peso?'<div style="text-align:center"><div style="font-size:18px;color:#ff6ec7;font-weight:700">'+x(m.peso)+'</div><div class="muted">kg</div></div>':'')
+      +(m.cintura?'<div style="text-align:center"><div style="font-size:18px;color:#a78bfa;font-weight:700">'+x(m.cintura)+'</div><div class="muted">cintura cm</div></div>':'')
+      +(m.cadera?'<div style="text-align:center"><div style="font-size:18px;color:#3ecf8e;font-weight:700">'+x(m.cadera)+'</div><div class="muted">cadera cm</div></div>':'')
+      +(m.pecho?'<div style="text-align:center"><div style="font-size:18px;color:#f7c94f;font-weight:700">'+x(m.pecho)+'</div><div class="muted">pecho cm</div></div>':'')
+      +(m.brazo?'<div style="text-align:center"><div style="font-size:18px;color:#f76f6f;font-weight:700">'+x(m.brazo)+'</div><div class="muted">brazo cm</div></div>':'')
+      +(m.nota?'<div style="width:100%;font-size:12px;color:#a06090;margin-top:4px">📝 '+x(m.nota)+'</div>':'')
+      +'</div></div>';
+  }).join('');
+  body.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div class="muted">📊 MI PROGRESO</div>'
+    +'<button id="btn-new-med" class="btn btnp btns">+ Registrar</button></div>'
+    +(rows||'<div class="muted" style="text-align:center;padding:14px">Sin registros aún 📊</div>');
+  document.getElementById('btn-new-med').onclick=openMedidaModal;
+  body.querySelectorAll('.del-med').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar registro?'))return;
+    S.medidas=S.medidas.filter(function(m){return m.id!==Number(b.getAttribute('data-id'));});
+    sv('medidas');renderProgreso();
+  };});
+}
+function openMedidaModal(){
+  showModal('<h3>📊 Registrar medidas</h3>'
+    +'<div class="row" style="margin-bottom:8px">'
+    +'<div style="flex:1"><div class="muted" style="margin-bottom:3px">Peso (kg)</div><input id="m-mpeso" class="inp" type="number" step="0.1" placeholder="60.5"/></div>'
+    +'<div style="flex:1"><div class="muted" style="margin-bottom:3px">Cintura (cm)</div><input id="m-mcintura" class="inp" type="number" placeholder="65"/></div>'
+    +'</div>'
+    +'<div class="row" style="margin-bottom:8px">'
+    +'<div style="flex:1"><div class="muted" style="margin-bottom:3px">Cadera (cm)</div><input id="m-mcadera" class="inp" type="number" placeholder="90"/></div>'
+    +'<div style="flex:1"><div class="muted" style="margin-bottom:3px">Pecho (cm)</div><input id="m-mpecho" class="inp" type="number" placeholder="85"/></div>'
+    +'</div>'
+    +'<div class="muted" style="margin-bottom:3px">Brazo (cm)</div>'
+    +'<input id="m-mbrazo" class="inp" type="number" placeholder="28" style="margin-bottom:8px"/>'
+    +'<div class="muted" style="margin-bottom:3px">Nota</div>'
+    +'<input id="m-mnota" class="inp" placeholder="Ej: me siento con más energía..." style="margin-bottom:12px"/>'
+    +'<div class="row"><button id="m-msave2" class="btn btnp">Guardar</button><button id="m-mcancel2" class="btn">Cancelar</button></div>');
+  document.getElementById('m-msave2').onclick=function(){
+    var obj={id:uid(),date:tod()};
+    var peso=document.getElementById('m-mpeso').value.trim();
+    var cin=document.getElementById('m-mcintura').value.trim();
+    var cad=document.getElementById('m-mcadera').value.trim();
+    var pec=document.getElementById('m-mpecho').value.trim();
+    var bra=document.getElementById('m-mbrazo').value.trim();
+    var not=document.getElementById('m-mnota').value.trim();
+    if(!peso&&!cin&&!cad&&!pec&&!bra)return;
+    if(peso)obj.peso=peso;if(cin)obj.cintura=cin;if(cad)obj.cadera=cad;
+    if(pec)obj.pecho=pec;if(bra)obj.brazo=bra;if(not)obj.nota=not;
+    if(!S.medidas)S.medidas=[];
+    S.medidas.push(obj);sv('medidas');closeModal();renderProgreso();
+  };
+  document.getElementById('m-mcancel2').onclick=closeModal;
+}
+var planDay=new Date().getDay();
+function renderPlan(){
+  var body=document.getElementById('gym-body');
+  var DIAS2=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  if(!S.planGym)S.planGym={};
+  var db=DIAS2.map(function(d,i){
+    var has=S.planGym[i]&&S.planGym[i].length;
+    return'<button class="btn plan-day-btn" data-d="'+i+'" style="flex:1;padding:8px 2px;font-size:12px;position:relative;background:'+(planDay===i?'#e91e8c':'#1a0018')+';color:'+(planDay===i?'#fff':'#a06090')+';border-color:'+(planDay===i?'#e91e8c':'#3d0035')+'">'+d+(has?'<span style="position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:#ffd700;display:block"></span>':'')+'</button>';
+  }).join('');
+  var dayRuts=S.planGym[planDay]||[];
+  var rutOpts=(S.rutinas||[]).map(function(r){return'<option>'+x(r.name)+'</option>';}).join('');
+  var planCards=dayRuts.map(function(name,i){
+    return'<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 11px;border-radius:8px;margin-bottom:6px;background:#0d0008;border:1px solid #e91e8c44">'
+      +'<div style="color:#fce4ff;font-size:13px">💪 '+x(name)+'</div>'
+      +'<button class="del-plan btn btns btnd" data-i="'+i+'">×</button></div>';
+  }).join('');
+  body.innerHTML='<div style="display:flex;gap:4px;margin-bottom:10px">'+db+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div class="muted">📅 '+DIAS2[planDay]+'</div>'
+    +'<div class="row">'
+    +(rutOpts?'<select id="plan-sel" class="inp" style="width:auto">'+rutOpts+'</select>'
+      +'<button id="plan-add" class="btn btnp btns">+ Añadir</button>':'<span class="muted">Crea rutinas primero</span>')
+    +'</div></div>'
+    +(planCards||'<div class="muted" style="text-align:center;padding:14px">Descanso 🌸</div>');
+  body.querySelectorAll('.plan-day-btn').forEach(function(b){b.onclick=function(){planDay=Number(b.getAttribute('data-d'));renderPlan();};});
+  if(document.getElementById('plan-add')){
+    document.getElementById('plan-add').onclick=function(){
+      var sel=document.getElementById('plan-sel').value;
+      if(!S.planGym[planDay])S.planGym[planDay]=[];
+      if(S.planGym[planDay].indexOf(sel)===-1)S.planGym[planDay].push(sel);
+      sv('planGym');renderPlan();
+    };
+  }
+  body.querySelectorAll('.del-plan').forEach(function(b){b.onclick=function(){
+    S.planGym[planDay].splice(Number(b.getAttribute('data-i')),1);
+    sv('planGym');renderPlan();
+  };});
+}
+function renderLogros(){
+  var body=document.getElementById('gym-body');
+  if(!S.logrosGym)S.logrosGym=[];
+  var cards=S.logrosGym.map(function(l){
+    var pct=l.total>0?Math.min(100,Math.round((l.prog/l.total)*100)):0;
+    return'<div class="card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      +'<div style="font-size:13px;color:#fce4ff">'+x(l.title)+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="prog-lg btn btns" data-id="'+l.id+'">+1</button>'
+      +'<button class="del-lg btn btns btnd" data-id="'+l.id+'">×</button></div></div>'
+      +'<div class="muted" style="margin-bottom:4px">'+x(l.cat)+' · '+l.prog+' / '+l.total+' '+x(l.unit)+' ('+pct+'%)</div>'
+      +'<div class="pbar"><div class="pfill" style="width:'+pct+'%"></div></div>'
+      +(pct>=100?'<div style="color:#ffd700;font-size:11px;margin-top:4px;text-align:center">🏆 ¡Meta alcanzada!</div>':'')
+      +'</div>';
+  }).join('');
+  body.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+    +'<div class="muted">🏆 MIS LOGROS FITNESS</div>'
+    +'<button id="btn-new-lg" class="btn btnp btns">+ Nuevo logro</button></div>'
+    +(cards||'<div class="muted" style="text-align:center;padding:14px">Sin logros aún 🏆</div>');
+  document.getElementById('btn-new-lg').onclick=function(){openLogroModal(null);};
+  body.querySelectorAll('.prog-lg').forEach(function(b){b.onclick=function(){
+    var id=Number(b.getAttribute('data-id'));
+    S.logrosGym=S.logrosGym.map(function(l){return l.id===id?Object.assign({},l,{prog:Math.min(l.total,l.prog+1)}):l;});
+    sv('logrosGym');renderLogros();
+  };});
+  body.querySelectorAll('.del-lg').forEach(function(b){b.onclick=function(){
+    if(!confirm('¿Eliminar logro?'))return;
+    S.logrosGym=S.logrosGym.filter(function(l){return l.id!==Number(b.getAttribute('data-id'));});
+    sv('logrosGym');renderLogros();
+  };});
+}
+function openLogroModal(id){
+  var cats=['Cardio','Fuerza','Flexibilidad','Peso','Medidas','General'];
+  var opts=cats.map(function(c){return'<option>'+c+'</option>';}).join('');
+  showModal('<h3>🏆 Nuevo logro fitness</h3>'
+    +'<input id="m-ltit" class="inp" placeholder="Ej: Correr 5km sin parar..." style="margin-bottom:8px"/>'
+    +'<select id="m-lcat" class="inp" style="margin-bottom:8px">'+opts+'</select>'
+    +'<div class="row" style="margin-bottom:8px">'
+    +'<input id="m-lprog" class="inp" type="number" min="0" value="0" placeholder="Progreso" style="flex:1"/>'
+    +'<input id="m-ltot" class="inp" type="number" min="1" value="1" placeholder="Total" style="flex:1"/></div>'
+    +'<input id="m-lunit" class="inp" placeholder="Unidad (ej: km, repeticiones...)" style="margin-bottom:12px"/>'
+    +'<div class="row"><button id="m-lsave" class="btn btnp">Guardar</button><button id="m-lcancel" class="btn">Cancelar</button></div>');
+  document.getElementById('m-lsave').onclick=function(){
+    var t=document.getElementById('m-ltit').value.trim();if(!t)return;
+    var c=document.getElementById('m-lcat').value;
+    var pr=parseInt(document.getElementById('m-lprog').value)||0;
+    var to=parseInt(document.getElementById('m-ltot').value)||1;
+    var u=document.getElementById('m-lunit').value.trim()||'veces';
+    if(!S.logrosGym)S.logrosGym=[];
+    S.logrosGym.push({id:uid(),title:t,cat:c,prog:pr,total:to,unit:u});
+    sv('logrosGym');closeModal();renderLogros();
+  };
+  document.getElementById('m-lcancel').onclick=closeModal;
+}
+initData();
+renderDev();
+</script>
+</body>
+</html>
